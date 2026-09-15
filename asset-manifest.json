@@ -1,0 +1,55 @@
+{
+  "source": "../deck-html/3d-progress-leadership/assets/",
+  "files": [
+    {
+      "file": "assets/font-license.txt",
+      "bytes": 4384,
+      "sha256": "2bd83546dee51ed524797179de88aa4aa297c33ee4ddd69e902cddea0d136e21"
+    },
+    {
+      "file": "assets/home-loan-2d.webp",
+      "bytes": 2418,
+      "sha256": "bd259c9d6ff3d934955d40d144d681083cbfdcc2fb51968d21e7240aa34440f7"
+    },
+    {
+      "file": "assets/home-loan-no-plinth-study-transparent-r7.png",
+      "bytes": 1292572,
+      "sha256": "a1557708330c6a1e620238891e1af6d32454686164f12936d06a9970c21cf972"
+    },
+    {
+      "file": "assets/home-loan.png",
+      "bytes": 173918,
+      "sha256": "e4aeea077bf5231762689a1288408682d3db5bbcb626c89715b30bbc32c7baee"
+    },
+    {
+      "file": "assets/mulish-bold.ttf",
+      "bytes": 138220,
+      "sha256": "79120e0bc9570ade14a2c7da2ac94138c60e55323e0a787405d2af0b99ef0141"
+    },
+    {
+      "file": "assets/mulish-regular.ttf",
+      "bytes": 138040,
+      "sha256": "183033a00c28957e0c658124fe1a3e74cccd762d5e86ae48126b6bf12c8eaee6"
+    },
+    {
+      "file": "assets/mulish-semibold.ttf",
+      "bytes": 137332,
+      "sha256": "a1d0dad6d74e5ab8f8722f0e00067c5fc0d69d636c56ea4fa0d98f35706f74f6"
+    },
+    {
+      "file": "assets/personal-loan-2d.webp",
+      "bytes": 4020,
+      "sha256": "89a0c0dcbb943e83d8fb6632e5954b23b8e0d975d37873c6ce8dcbbf96a01769"
+    },
+    {
+      "file": "assets/personal-loan-no-plinth-draft-transparent-r7.png",
+      "bytes": 1376764,
+      "sha256": "867c1fb1df71bcfbb6c7e77af83440a02f4e85ab50641fceb203cac02f6ef21e"
+    },
+    {
+      "file": "assets/personal-loan-original.png",
+      "bytes": 173054,
+      "sha256": "90ce7d11a6eeef6336689f46fc3b6652af673a7102d0928f66a7b61ccc491bcf"
+    }
+  ]
+}

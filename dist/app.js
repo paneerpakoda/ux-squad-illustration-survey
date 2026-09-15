@@ -10,7 +10,7 @@ const storageKey=R.version;
 let state={version:R.version,id:crypto.randomUUID(),styleOrder:R.shuffle(R.styles,random),productOrder:R.shuffle(R.products,random),answers:{improvements:''},step:0,submitted:false};
 try{
  const saved=JSON.parse(sessionStorage.getItem(storageKey));
- if(saved&&saved.version===R.version&&R.permutation(saved.styleOrder,R.styles)&&R.permutation(saved.productOrder,R.products)&&Number.isInteger(saved.step)&&saved.step>=0&&saved.step<=2&&saved.answers&&Object.entries(saved.answers).every(([k,v])=>R.validAnswer(k,v))&&typeof saved.id==='string')state=saved;
+ if(saved&&(saved.pendingResponse||saved.submitted)&&saved.version===R.version&&R.permutation(saved.styleOrder,R.styles)&&R.permutation(saved.productOrder,R.products)&&Number.isInteger(saved.step)&&saved.step>=0&&saved.step<=2&&saved.answers&&Object.entries(saved.answers).every(([k,v])=>R.validAnswer(k,v))&&typeof saved.id==='string')state=saved;
 }catch{}
 let busy=false,commentOpen=false;
 const endpoint=window.SURVEY_CONFIG?.endpoint||'';
@@ -22,7 +22,7 @@ function image(product,style){return `<img src="assets/${assets[product][style]}
 function artworkChoices(){
  const overall=state.step===2;
  const product=state.productOrder[state.step];
- return `<div class="art-options ${overall?'overall-options':''}" role="group" aria-label="Illustration choices">${state.styleOrder.map(style=>`<button type="button" class="art-option" data-choice="${style}" aria-pressed="${state.answers[currentField()]===style}" aria-label="${overall?'Choose '+styleNames[style]:'Choose version '+versionLetter(style)+' and continue'}" ${state.pendingResponse?'disabled':''}>${overall?`<span class="art-pair">${state.productOrder.map(p=>image(p,style)).join('')}</span>`:image(product,style)}<span class="option-label">${overall?styleNames[style]:versionLetter(style)}</span></button>`).join('')}</div>`;
+ return `<div class="art-options ${overall?'overall-options':''}" role="group" aria-label="Illustration choices">${state.styleOrder.map(style=>`<button type="button" class="art-option" data-choice="${style}" aria-pressed="${state.answers[currentField()]===style}" aria-label="${overall?'Choose '+styleNames[style]:'Choose version '+versionLetter(style)}" ${state.pendingResponse?'disabled':''}>${overall?`<span class="art-pair">${state.productOrder.map(p=>image(p,style)).join('')}</span>`:image(product,style)}<span class="option-label">${overall?styleNames[style]:versionLetter(style)}</span></button>`).join('')}</div>`;
 }
 function otherChoices(){return `<div class="other-options" role="group" aria-label="Other choices">${[...(state.step===2?['depends']:[]),'no_preference','none'].map(value=>`<button type="button" class="other-option" data-choice="${value}" aria-pressed="${state.answers[currentField()]===value}" ${state.pendingResponse?'disabled':''}>${labels[value]}</button>`).join('')}</div>`;}
 function showError(message){$('#form-error').textContent=message;$('#form-error').hidden=false;}
@@ -35,12 +35,12 @@ function render(focus=false){
  }
  const final=state.step===2;
  const title=final?'Which style would you use overall?':`Which ${productNames[state.productOrder[state.step]]} illustration works best?`;
- $('#screen').innerHTML=`<h1 tabindex="-1">${title}</h1><p class="instruction">${final?'Think about both products.':'Tap an image to choose and continue. You can go back.'}</p>${artworkChoices()}${otherChoices()}${final?`<details class="comment" ${commentOpen||state.answers.improvements?'open':''}><summary>Add a comment <span>(optional)</span></summary><label for="improvements">What would you keep or change?</label><textarea id="improvements" name="improvements" maxlength="1500" rows="2" ${state.pendingResponse?'disabled':''}>${escape(state.answers.improvements)}</textarea></details>`:''}`;
+ $('#screen').innerHTML=`<h1 tabindex="-1">${title}</h1><p class="instruction">${final?'Think about both products.':'Choose an option, then tap Next.'}</p>${artworkChoices()}${otherChoices()}${final?`<details class="comment" ${commentOpen||state.answers.improvements?'open':''}><summary>Add a comment <span>(optional)</span></summary><label for="improvements">What would you keep or change?</label><textarea id="improvements" name="improvements" maxlength="1500" rows="2" ${state.pendingResponse?'disabled':''}>${escape(state.answers.improvements)}</textarea></details>`:''}`;
  $('#step-label').textContent=`${state.step+1} / 3`;
  $('#progress-fill').style.width=(state.step+1)/3*100+'%';
  $('#back').hidden=state.step===0;$('#back').disabled=!!state.pendingResponse;
- $('#next').hidden=!final;$('#next').disabled=!connected||!R.validAnswer('overall',state.answers.overall);
- $('#next').textContent=state.pendingResponse?'Try sending again':'Send feedback';
+ $('#next').hidden=false;$('#next').disabled=!R.validAnswer(currentField(),state.answers[currentField()])||(final&&!connected);
+ $('#next').textContent=final?(state.pendingResponse?'Try sending again':'Send feedback'):'Next';
  $('.comment')?.addEventListener('toggle',event=>{commentOpen=event.target.open;});
  if(focus){$('#screen h1').focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});}
 }
@@ -49,11 +49,8 @@ function selectChoice(value){
  if([...document.querySelectorAll('.art-options img')].some(img=>!img.complete||!img.naturalWidth)){showError('The illustrations are still loading. Please try again in a moment.');return;}
  state.answers[currentField()]=value;
  $('#form-error').hidden=true;
- if(state.step<2){state.step++;persist();render(true);}
- else{
-  document.querySelectorAll('[data-choice]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.choice===value)));
-  $('#next').disabled=!connected;persist();
- }
+ document.querySelectorAll('[data-choice]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.choice===value)));
+ $('#next').disabled=state.step===2&&!connected;persist();
 }
 $('#survey').addEventListener('click',event=>{
  const button=event.target.closest('[data-choice]');if(button)selectChoice(button.dataset.choice);
@@ -64,7 +61,12 @@ $('#survey').addEventListener('input',event=>{
 $('#back').addEventListener('click',()=>{if(busy||state.pendingResponse||state.step===0)return;state.step--;persist();render(true);});
 function payload(){return R.validate({version:R.version,id:state.id,styleOrder:state.styleOrder,productOrder:state.productOrder,answers:state.answers});}
 $('#survey').addEventListener('submit',async event=>{
- event.preventDefault();if(busy||state.step!==2||!connected)return;
+ event.preventDefault();if(busy)return;
+ if(state.step<2){
+  if(state.pendingResponse||!R.validAnswer(currentField(),state.answers[currentField()]))return;
+  state.step++;persist();render(true);return;
+ }
+ if(!connected)return;
  let data;try{data=state.pendingResponse||payload();state.pendingResponse=data;persist();}catch{showError('Please choose an option for each question.');return;}
  busy=true;$('#next').disabled=true;$('#back').disabled=true;$('#next').textContent='Sending…';$('#form-error').hidden=true;
  document.querySelectorAll('[data-choice],textarea').forEach(control=>{control.disabled=true;});

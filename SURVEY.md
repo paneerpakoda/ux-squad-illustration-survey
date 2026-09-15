@@ -8,7 +8,7 @@ All current UX Squad designers. Gather preferences and actionable feedback on 3D
 
 1. **Which Home Loan illustration works best?**
    - Three equally framed illustrations labelled A, B and C.
-   - Tap an illustration to answer and move to the next question.
+   - Select an illustration, then tap Next to move to the next question.
    - Alternatives: **No preference**, **None of these**.
 2. **Which Personal Loan illustration works best?**
    - Same interaction and alternatives.
@@ -18,7 +18,7 @@ All current UX Squad designers. Gather preferences and actionable feedback on 3D
    - **Add a comment (optional)** expands one field: **What would you keep or change?** Maximum 1,500 characters.
    - Selecting the recommendation does not submit. The participant taps **Send feedback** explicitly.
 
-A/B/C assignment and product order are shuffled once per response and preserved throughout. Back retains earlier choices and allows changes. Artwork is always large; there is no size toggle. Options appear in three columns on desktop and one vertical column at 600 px and narrower. Nothing is preselected. The first two prompts explicitly say that choosing advances the survey.
+A/B/C assignment and product order are shuffled once per response and preserved throughout. Back retains earlier choices and allows changes. Artwork is always large; there is no size toggle. Options appear in three columns on desktop and one vertical column at 600 px and narrower. Nothing is preselected. Each fresh page load starts with no selections; Next stays disabled until a choice is made. Back retains answers within the active survey. Pending submissions are restored for safe retries.
 
 The interface contains a small progress indicator, one question, artwork choices and essential actions. Alternative choices have clear bordered button surfaces. Privacy and setup footers have been removed at Harsh’s request; response collection still requires the endpoint setup documented in README. The previous introduction, navigation branding, sample offer cards, clarity questions, nine rating questions, prior-exposure question and separate review screen have been removed.
 

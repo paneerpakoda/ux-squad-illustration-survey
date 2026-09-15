@@ -1,6 +1,6 @@
 # UX Squad illustration feedback survey
 
-A minimal, approximately one-minute survey for all current UX Squad designers, comparing 3D with plinth, 3D without plinth and existing 2D illustrations. Uses the actual Home Loan and Personal Loan artwork from the leadership deck. Three required choices and one optional comment. Tap an image to advance through the first two questions; the final response sends only after tapping Send feedback.
+A minimal, approximately one-minute survey for all current UX Squad designers, comparing 3D with plinth, 3D without plinth and existing 2D illustrations. Uses the actual Home Loan and Personal Loan artwork from the leadership deck. Three required choices and one optional comment. Choose an option and tap Next on the first two questions; the final response sends only after tapping Send feedback.
 
 **Status:** Google Sheets collection is deployed and connected. A real local-browser submission received an explicit save acknowledgment and created exactly one labelled test row; that test was cleared afterward. The Sheet remains private. Public survey/artwork publication was approved by the owner.
 
@@ -68,7 +68,7 @@ See **SURVEY.md** for the questionnaire and interpretation notes. One completed 
 
 ## Validation and maintenance
 
-Run `node --test tests/*.test.cjs` from this directory. The 27 tests cover tap-to-advance flow, Back and retained answers, explicit final submission, missing artwork, schema validation, neutral responses, randomized-order integrity, Sheets writing, deduplication, failure acknowledgments and spreadsheet-formula escaping. They use an in-memory Sheet adapter; they do not demonstrate a live Google deployment.
+Run `node --test tests/*.test.cjs` from this directory. The 30 tests cover selection and explicit Next navigation, Back and retained answers, explicit final submission, missing artwork, schema validation, neutral responses, randomized-order integrity, Sheets writing, deduplication, failure acknowledgments and spreadsheet-formula escaping. They use an in-memory Sheet adapter; they do not demonstrate a live Google deployment.
 
 The editable receiver is `backend/server.js`, sharing rules with `dist/rules.js`. After editing either, regenerate `backend/Code.gs` by concatenating `dist/rules.js` and `backend/server.js`, in that order, and re-run tests. `Code.gs` is the file to paste into Google.
 

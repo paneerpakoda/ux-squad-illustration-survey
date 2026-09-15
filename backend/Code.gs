@@ -1,4 +1,4 @@
-// Paste this entire file into Apps Script. Generated from dist/rules.js + backend/server.js.
+// Google Sheets response collector for the UX Squad illustration survey.
 /* Shared by the browser and backend/Code.gs. */
 var SurveyRules = (function () {
   'use strict';
@@ -23,14 +23,13 @@ var SurveyRules = (function () {
   return {version,styles,products,choices,fields,validAnswer,validate,permutation,shuffle};
 })();
 
-/* Edit this origin before running setup(). Do not add a path or trailing slash. */
-const SURVEY_ORIGIN = 'https://YOUR-USERNAME.github.io';
+/* Allowed survey origins. The loopback origin supports local integration checks. */
+const SURVEY_ORIGINS = ['https://paneerpakoda.github.io', 'http://127.0.0.1:8891'];
 const SHEET_NAME = 'Responses';
 const HEADER = ['received_at','response_id','survey_version','version_A','version_B','version_C','product_order',...Object.keys(SurveyRules.fields),'response_json'];
 
 /** Run once from the Apps Script editor attached to your Google Sheet. */
 function setup() {
-  if(!/^https:\/\/[^/]+$/.test(SURVEY_ORIGIN)||SURVEY_ORIGIN.includes('YOUR-USERNAME'))throw Error('Set SURVEY_ORIGIN to your GitHub Pages origin first.');
   const book=SpreadsheetApp.getActiveSpreadsheet();
   if(!book)throw Error('Open this script using Extensions → Apps Script from your Google Sheet.');
   PropertiesService.getScriptProperties().setProperty('SHEET_ID',book.getId());
@@ -69,13 +68,13 @@ function doPost(e){
   const nonce=typeof input.nonce==='string'&&/^[0-9a-f-]{36}$/i.test(input.nonce)?input.nonce:'';
   let id='',ok=false;
   try{
-    if(input.origin!==SURVEY_ORIGIN||!nonce)throw Error('Invalid origin.');
+    if(!SURVEY_ORIGINS.includes(input.origin)||!nonce)throw Error('Invalid origin.');
     if(typeof input.payload!=='string'||input.payload.length>16000)throw Error('Invalid response size.');
     const p=JSON.parse(input.payload);id=typeof p.id==='string'?p.id:'';
     saveResponse(p);ok=true;
   }catch(error){/* No response contents or personal comments in logs. */}
   const message=JSON.stringify({type:'ux-survey-saved',nonce,id,ok}).replace(/</g,'\\u003c');
-  const target=JSON.stringify(SURVEY_ORIGIN).replace(/</g,'\\u003c');
+  const target=JSON.stringify(SURVEY_ORIGINS.includes(input.origin)?input.origin:SURVEY_ORIGINS[0]).replace(/</g,'\\u003c');
   // Apps Script nests HTML in a sandbox iframe. Send to the host page with an exact target origin.
   const html='<!doctype html><html><body><p>'+ (ok?'Feedback saved.':'Feedback could not be saved. Please return to the survey and retry.') +'</p><script>const m='+message+';const o='+target+';for(const w of [window.parent,window.parent.parent,window.top]){try{w.postMessage(m,o);}catch(e){}}</script></body></html>';
   return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);

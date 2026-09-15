@@ -2,7 +2,7 @@
 
 A minimal, approximately one-minute survey for all current UX Squad designers, comparing 3D with plinth, 3D without plinth and existing 2D illustrations. Uses the actual Home Loan and Personal Loan artwork from the leadership deck. Three required choices and one optional comment. Tap an image to advance through the first two questions; the final response sends only after tapping Send feedback.
 
-**Status:** complete local survey and Google Sheets receiver template. No endpoint has been deployed, no responses collected, and no GitHub publication performed. Submission remains disabled until configured. Setup and privacy details are kept in this guide; they are not shown as survey footers.
+**Status:** Google Sheets collection is deployed and connected. A real local-browser submission received an explicit save acknowledgment and created exactly one labelled test row; that test was cleared afterward. The Sheet remains private. Public survey/artwork publication was approved by the owner.
 
 The earlier version is retained in `ux-squad-illustration-survey-v1.zip`. If you already configured its response Sheet, use a fresh Sheet and the new `Code.gs` for version 2; do not mix the two column schemas.
 
@@ -11,7 +11,7 @@ The earlier version is retained in `ux-squad-illustration-survey-v1.zip`. If you
 1. Create a blank Google Sheet named **UX Squad — Illustration feedback**. Keep its sharing restricted to the survey owner and intended reviewers.
 2. Choose **Extensions → Apps Script**.
 3. Replace the editor's starter code with the entire contents of **backend/Code.gs**. This is one self-contained script; do not paste `server.js` separately.
-4. Find `SURVEY_ORIGIN` and replace `https://YOUR-USERNAME.github.io` with your GitHub Pages origin, for example `https://harsh.github.io`. Use only the origin, without a repository path or trailing slash. If you use a custom domain, use that origin.
+4. `SURVEY_ORIGINS` is configured for `https://paneerpakoda.github.io` and the local integration preview `http://127.0.0.1:8891`. For a different host, update this array with its exact origin, without a path or trailing slash.
 5. Save, choose the `setup` function, and run it. Authorize the script in your Google account. This records the bound Sheet ID in Script Properties and creates the **Responses** tab with the correct column headers. It does not send any responses.
 6. Choose **Deploy → New deployment → Web app**. Set **Execute as: Me** and access to **Anyone** so designers can submit from the WhatsApp browser without a Google login. If your Workspace administrator does not offer that option, use an account or collection service permitted by your organisation; the public-page integration will not work with a sign-in-only endpoint.
 7. Deploy and copy the web-app URL ending in `/exec`, not the development `/dev` URL.
@@ -72,6 +72,6 @@ Run `node --test tests/*.test.cjs` from this directory. The 27 tests cover tap-t
 
 The editable receiver is `backend/server.js`, sharing rules with `dist/rules.js`. After editing either, regenerate `backend/Code.gs` by concatenating `dist/rules.js` and `backend/server.js`, in that order, and re-run tests. `Code.gs` is the file to paste into Google.
 
-Static entrypoints, asset references and JS syntax were checked. A successful local HTTP response was checked. Live Google/WhatsApp/browser visual verification is pending the setup above. Optional read-only WebMCP draft access is feature-detected; no compatible validation context was available, so it is not claimed as verified.
+Static entrypoints, asset references and JS syntax were checked. A successful local HTTP response was checked. Live Google submission and save confirmation were verified in Zen from the local survey on 15 September 2026. GitHub-hosted and WhatsApp/phone verification remain pending. Optional read-only WebMCP draft access is feature-detected; no compatible validation context was available, so it is not claimed as verified.
 
 Official setup references: [Google Apps Script web apps](https://developers.google.com/apps-script/guides/web), [HTML sandbox restrictions](https://developers.google.com/apps-script/guides/html/restrictions), [iframe output settings](https://developers.google.com/apps-script/reference/html/html-output#setXFrameOptionsMode(XFrameOptionsMode)), [GitHub Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).

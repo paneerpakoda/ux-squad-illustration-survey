@@ -14,7 +14,7 @@ function fixture(){
  const p={version:R.version,id:'01234567-89ab-4cde-8fab-0123456789ab',styleOrder:['without_plinth','flat_2d','with_plinth'],productOrder:['home','personal'],answers};
  return {ctx,p,rows,getWrites:()=>writes,isLocked:()=>locked};
 }
-function post(f,origin='https://YOUR-USERNAME.github.io'){return f.ctx.doPost({parameter:{origin,nonce:'01234567-89ab-4cde-8fab-0123456789ab',payload:JSON.stringify(f.p)}}).html;}
+function post(f,origin='https://paneerpakoda.github.io'){return f.ctx.doPost({parameter:{origin,nonce:'01234567-89ab-4cde-8fab-0123456789ab',payload:JSON.stringify(f.p)}}).html;}
 
 test('valid response stores one row plus header with canonical style mapping',()=>{const f=fixture();f.ctx.saveResponse(f.p);assert.equal(f.rows.length,2);assert.deepEqual(f.rows[1].slice(3,6),f.p.styleOrder);assert.equal(f.isLocked(),false);});
 test('retry of the same response never adds a second row',()=>{const f=fixture();f.ctx.saveResponse(f.p);f.ctx.saveResponse(f.p);assert.equal(f.rows.length,2);});

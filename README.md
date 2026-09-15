@@ -9,7 +9,7 @@ A minimal survey comparing 3D with plinth, 3D without plinth and existing 2D ill
 
 ## Response storage
 
-Response collection is not connected yet. `dist/config.js` has an empty endpoint, so submission stays disabled. Do not invite respondents until the collector is configured and a live test succeeds.
+Google Sheets collection is connected. A live browser test confirmed both the save acknowledgment and a response row; the labelled test record was cleared afterward.
 
 GitHub Pages serves static files and cannot write responses to this repository. The included Google Apps Script receiver stores responses in a private Google Sheet. No GitHub token, API secret or response data should be added to the published files.
 

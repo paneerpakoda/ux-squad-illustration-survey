@@ -42,7 +42,7 @@ function render(focus=false){
  let comment='';
  if(q.kind==='clarity')comment=`<details class="comment" ${comments[q.product.id+'_reason']?'open':''}><summary>Add a reason <span>(optional)</span></summary>${field(q.product.id+'_reason','What influenced your choices for this product?')}</details>`;
  if(final)comment=`<details class="comment" ${comments.reason||comments.changes?'open':''}><summary>Add your reasoning <span>(optional)</span></summary>${field('reason','What is the main reason for your recommendation?')}${field('changes','What would need to change before you would use it?')}</details>`;
- $('#screen').innerHTML=`<p class="question-kind">${type}</p><h1 tabindex="-1">${title}</h1><p class="instruction">${instruction}</p>${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="name" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():artChoices(q))+options(q)}${note?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
+ $('#screen').innerHTML=`<p class="question-kind">${type}</p><h1 tabindex="-1">${title}</h1><p class="instruction">${instruction}</p>${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="off" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():artChoices(q))+options(q)}${note?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
  document.querySelector('main').classList.toggle('screen-comparison',q.kind==='screen');
  screenObserver.disconnect();document.querySelectorAll('.screen-viewport').forEach(el=>screenObserver.observe(el));
  $('#step-label').textContent=`${step+1} / ${steps.length}`;
@@ -64,7 +64,15 @@ $('#survey').addEventListener('input',event=>{if(['TEXTAREA','INPUT'].includes(e
 $('#back').addEventListener('click',()=>{if(step>0&&!busy&&!state.pendingResponse){step--;persist();render(true);}});
 
 function payload(){return R.validate({version:state.version,id:state.id,styleOrder:styles,productOrder:state.productOrder,assignments:state.assignments,answers});}
-function showSuccess(){screenObserver.disconnect();document.querySelector('main').classList.remove('screen-comparison');$('#survey').innerHTML='<section class="success"><h1 tabindex="-1">Thank you.</h1><p>Your feedback is saved. You can close this page.</p></section>';$('.progress').hidden=true;$('#step-label').hidden=true;$('#survey h1').focus();window.scrollTo({top:0,behavior:'instant'});}
+function showSuccess(){
+ screenObserver.disconnect();document.querySelector('main').classList.remove('screen-comparison');
+ $('#survey').innerHTML='<section class="success"><h1 tabindex="-1">Thank you.</h1><p>Your feedback is saved.</p><button id="next-person" type="button" class="send">Start for next person</button></section>';
+ $('#next-person').addEventListener('click',()=>{
+  try{sessionStorage.removeItem(storageKey);}catch{}
+  location.reload();
+ });
+ $('.progress').hidden=true;$('#step-label').hidden=true;$('#survey h1').focus();window.scrollTo({top:0,behavior:'instant'});
+}
 $('#survey').addEventListener('submit',async event=>{
  event.preventDefault();if(busy||!R.validAnswer(key(),answers[key()]))return;
  if(step<steps.length-1){if(state.pendingResponse)return;step++;persist();render(true);return;}

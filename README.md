@@ -27,3 +27,7 @@ https://paneerpakoda.github.io/ux-squad-illustration-survey/
 ## Rollback
 
 Git commit 06afe4f retains the prior public survey; the canonical workspace also has releases/v2-before-expanded/. Reverting the page to v2 does not require rolling back the compatible collector. Preserve both response tabs.
+
+## Taking responses on one laptop
+
+After each confirmed save, click **Start for next person**. The survey returns to a blank name entry with cleared answers and a new response ID. Previously saved responses stay in Google Sheets. If a save cannot be confirmed, retry it before handing over the laptop; the restart button appears only after confirmation.

@@ -9,3 +9,9 @@ Collector deployed successfully as Apps Script deployment version 2 at 14:01 IST
 A real submission through the public GitHub page returned saved acknowledgment with all 16 fields, including the required name. Its exact synthetic UUID was confirmed in Responses v3 row 2 along with the SETUP TEST label. Only A2:Y2 was cleared afterward; headers and prior Responses tab were preserved. No JavaScript errors occurred. The page is ready to collect responses. No invitation was sent; physical phone/WhatsApp verification remains unclaimed.
 
 Rollback: public commit 06afe4f. Compatible collector preserves v2 submissions and the original response tab.
+
+## Shared-laptop collection
+
+Added **Start for next person** after confirmed saves. It clears only this survey’s session, then initializes a blank name, empty choices/comments, fresh randomized assignments and a new response UUID. Name autocomplete is disabled. Saved Google Sheet rows are preserved; unconfirmed submissions keep the existing retry flow.
+
+Local isolated Chromium verified two consecutive participants, separate UUIDs, no name/answer/comment carryover, success after refresh, a rejected submission followed by an identical-payload retry, unrelated session storage preservation, mobile fit and no JavaScript errors. Google requests were intercepted; no synthetic feedback was added to the live Sheet. All 46 Node tests pass.

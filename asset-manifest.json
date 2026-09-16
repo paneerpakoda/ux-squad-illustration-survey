@@ -1,10 +1,51 @@
 {
-  "source": "../deck-html/3d-progress-leadership/assets/",
+  "version": "ux-illustrations-2026-09-v3",
+  "note": "Selected survey assets; new no-plinth studies are opaque-white drafts. Original 2D exports remain low resolution.",
   "files": [
+    {
+      "file": "assets/car-flat_2d.webp",
+      "bytes": 3630,
+      "sha256": "a1c3db253db889f26a456d18d8f21c03223363f398bee24921dc23c662cb08fb"
+    },
+    {
+      "file": "assets/car-with_plinth.png",
+      "bytes": 132354,
+      "sha256": "29172d31f75f04a86510af9cf8f8e698a0292e269e9aece8284853876902a29a"
+    },
+    {
+      "file": "assets/car-without_plinth.png",
+      "bytes": 762197,
+      "sha256": "eaee479357e5ec5a9c9b8d0b3632628bbd8b482c0e86a7d676ba66d1d4ef2266"
+    },
+    {
+      "file": "assets/education-flat_2d.webp",
+      "bytes": 2772,
+      "sha256": "a665ceea74f8d89420ea9969dee35b5c68db074930aabbe4818a25c569a25c92"
+    },
+    {
+      "file": "assets/education-with_plinth.png",
+      "bytes": 184960,
+      "sha256": "2bdab33b09b43ef63b41ad25a96de84f8116fa9871b3fceef852bf984c19b14e"
+    },
+    {
+      "file": "assets/education-without_plinth.png",
+      "bytes": 952687,
+      "sha256": "2698dc403054e4fe678beb00b863d6b741eedc68e6504d7836a390287c7e29f0"
+    },
+    {
+      "file": "assets/flexi-constant.png",
+      "bytes": 196351,
+      "sha256": "4a010e1e61cb4f588f49ac2e6bec184f2433814c5d72cdd45fb28746eb05be46"
+    },
     {
       "file": "assets/font-license.txt",
       "bytes": 4384,
       "sha256": "2bd83546dee51ed524797179de88aa4aa297c33ee4ddd69e902cddea0d136e21"
+    },
+    {
+      "file": "assets/home-flat_2d.webp",
+      "bytes": 2418,
+      "sha256": "bd259c9d6ff3d934955d40d144d681083cbfdcc2fb51968d21e7240aa34440f7"
     },
     {
       "file": "assets/home-loan-2d.webp",
@@ -22,6 +63,26 @@
       "sha256": "e4aeea077bf5231762689a1288408682d3db5bbcb626c89715b30bbc32c7baee"
     },
     {
+      "file": "assets/home-with_plinth.png",
+      "bytes": 173918,
+      "sha256": "e4aeea077bf5231762689a1288408682d3db5bbcb626c89715b30bbc32c7baee"
+    },
+    {
+      "file": "assets/home-without_plinth.png",
+      "bytes": 1292572,
+      "sha256": "a1557708330c6a1e620238891e1af6d32454686164f12936d06a9970c21cf972"
+    },
+    {
+      "file": "assets/imgCheckboxChecked.svg",
+      "bytes": 896,
+      "sha256": "7f5f96f9bd0611b9d7363fc9405adfe24e31d8e16017b8e2121c14fbe2240836"
+    },
+    {
+      "file": "assets/imgFilledEdit.svg",
+      "bytes": 629,
+      "sha256": "471d60b88fa7d9dfba73cce66ed021e21504cae80a1b003c95e37118520f5747"
+    },
+    {
       "file": "assets/mulish-bold.ttf",
       "bytes": 138220,
       "sha256": "79120e0bc9570ade14a2c7da2ac94138c60e55323e0a787405d2af0b99ef0141"
@@ -37,6 +98,16 @@
       "sha256": "a1d0dad6d74e5ab8f8722f0e00067c5fc0d69d636c56ea4fa0d98f35706f74f6"
     },
     {
+      "file": "assets/offers-banner.svg",
+      "bytes": 406155,
+      "sha256": "0fcd8976960457d2509c265a87fead13a565ba4328b745636c15c9890d8786a5"
+    },
+    {
+      "file": "assets/personal-flat_2d.webp",
+      "bytes": 4020,
+      "sha256": "89a0c0dcbb943e83d8fb6632e5954b23b8e0d975d37873c6ce8dcbbf96a01769"
+    },
+    {
       "file": "assets/personal-loan-2d.webp",
       "bytes": 4020,
       "sha256": "89a0c0dcbb943e83d8fb6632e5954b23b8e0d975d37873c6ce8dcbbf96a01769"
@@ -50,6 +121,51 @@
       "file": "assets/personal-loan-original.png",
       "bytes": 173054,
       "sha256": "90ce7d11a6eeef6336689f46fc3b6652af673a7102d0928f66a7b61ccc491bcf"
+    },
+    {
+      "file": "assets/personal-with_plinth.png",
+      "bytes": 173054,
+      "sha256": "90ce7d11a6eeef6336689f46fc3b6652af673a7102d0928f66a7b61ccc491bcf"
+    },
+    {
+      "file": "assets/personal-without_plinth.png",
+      "bytes": 1376764,
+      "sha256": "867c1fb1df71bcfbb6c7e77af83440a02f4e85ab50641fceb203cac02f6ef21e"
+    },
+    {
+      "file": "assets/rupay-flat_2d.webp",
+      "bytes": 2142,
+      "sha256": "03c1f851db6865a4ecf57d5ecad7d188a8b7827e95bb1346461caca857b07482"
+    },
+    {
+      "file": "assets/rupay-with_plinth.png",
+      "bytes": 208241,
+      "sha256": "f96c4efaeed6c6d91de9a53538c30da82c1ed352ccd9a94815ce0af770614c35"
+    },
+    {
+      "file": "assets/rupay-without_plinth.png",
+      "bytes": 1106067,
+      "sha256": "8f805026cc05d055df0941dcde270d6bdfc8858cca360bbfdceae6d261eb4d63"
+    },
+    {
+      "file": "assets/two_wheeler-flat_2d.webp",
+      "bytes": 4218,
+      "sha256": "8bfb51cc4f3f5ced0925181480ed30f1ca60a5c691a64656ff392f1816f85ae4"
+    },
+    {
+      "file": "assets/two_wheeler-sw-with-plinth-v3.png",
+      "bytes": 232202,
+      "sha256": "19bc5b73de25bf8bda61be36b0e12a7dea82e134f40cf0639624bddeff62ee95"
+    },
+    {
+      "file": "assets/two_wheeler-with_plinth.png",
+      "bytes": 232202,
+      "sha256": "19bc5b73de25bf8bda61be36b0e12a7dea82e134f40cf0639624bddeff62ee95"
+    },
+    {
+      "file": "assets/two_wheeler-without_plinth.png",
+      "bytes": 1138288,
+      "sha256": "f46e3b62f665a0de51a6ded0a660f862ed1ac6b1f06b35ea9f70a819218b8f0e"
     }
   ]
 }

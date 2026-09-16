@@ -1,0 +1,14 @@
+/* Rebuild of the user-supplied 360 × 1126 Offers screen. Only five row illustrations vary. */
+function offersScreen(style){
+ const rows=[['home','Home Loan','₹10,00,00,000'],['car','Car Loan','₹50,00,000'],['personal','Personal Loan','₹25,00,000'],['education','Education Loan','Upto ₹40,00,000'],['two_wheeler','Two-wheeler Loan','Upto ₹10,00,000'],['flexi','Insta Flexi-cash','Upto ₹5,00,000']];
+ return `<span class="screen-viewport" aria-hidden="true"><span class="offers-screen">
+ <span class="offers-header"><span class="status-bar"><span>10:00</span><span>▮▮▮ &nbsp;⌁ &nbsp;▰</span></span><span class="offers-nav"><span class="nav-circle">‹</span><strong>Offers</strong><span class="nav-circle help">?</span><span class="nav-circle">⋮</span></span><span class="offers-tagline">Your pre-approved loans are ready!</span><span class="banner-wrap"><img class="offers-banner" src="assets/offers-banner.svg" alt=""><span class="banner-copy"><span>YOU CAN AVAIL UP TO ⓘ</span><strong>₹ 10,00,00,000</strong></span></span></span>
+ <span class="filters"><span><i></i> Home</span><span><i></i> Personal &amp; Card</span><span><i></i> Vehicle</span></span>
+ <span class="offer-list">${rows.map(([id,label,amount],i)=>`<span class="offer-row ${i<3?'preapproved':''}">${i<3?'<span class="approval-badge">✿ PRE APPROVED</span>':''}<span class="offer-icon"><img src="${id==='flexi'?'assets/flexi-constant.png':products.find(p=>p.id===id).images[style]}" alt=""></span><span class="offer-name">${label}</span><span class="offer-amount">${amount}<img src="assets/imgFilledEdit.svg" alt=""></span><span class="offer-cta">${i<3?'Avail Now':'Apply Now'}</span></span>`).join('')}</span>
+ <span class="offers-consent">By applying to any of the offers, I authorise ICICI Bank and its representatives, including service providers, to contact me via call, SMS, WhatsApp, or e-mail for processing my application and on-boarding formalities</span>
+ <span class="offers-footer">Important policies &amp; regulatory information<span class="policy-links"><span>Digital lending application ↗</span><span>Privacy policy ↗</span><span>Grievance Redressal ↗</span><span>RBI’s Sachet portal ↗</span></span></span>
+ </span></span>`;
+}
+function screenChoices(){
+ return `<div class="art-options screen-options" role="group" aria-label="Offers screen choices">${styles.map((style,i)=>`<button type="button" class="art-option screen-option" data-choice="${style}" aria-pressed="${answers[key()]===style}" aria-label="Choose Offers screen ${'ABC'[i]}, ${names[style]}"><span class="screen-choice-label">${'ABC'[i]} <span>${names[style]}</span></span>${offersScreen(style)}</button>`).join('')}</div>`;
+}

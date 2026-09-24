@@ -47,3 +47,7 @@ Each feedback question offers optional multi-select reasons and custom text. Que
 Validation: 51 Node tests pass, including old-header migration, grid expansion, prior retry compatibility, multi-select/custom persistence, input validation and deduplication. Local browser checks verified optional blank details, Back retention, all eleven details sections, loaded artwork, 360:800 crop and no horizontal overflow at 320/768/1024/1440 px. No runtime errors in local or hosted checked flows. Physical handset/WhatsApp testing is not claimed.
 
 A labelled live submission through the hosted survey returned confirmed success. Responses v3 row 24 contained UUID 98c72372-61f4-4a98-919d-5f4830fe0bc1, all eleven details objects with two selections and custom text each, and the correct artwork revision. Only the verified synthetic range A24:AB24 was cleared afterward; existing participant rows and headers remain. Start for next person returned to a blank name entry.
+
+## 24 September — Choice guidance and question navigation
+
+Published commit `bb9e0f82dcdccc06631b4e4be6a118ef899cc76b`; GitHub Pages run `35983729651` succeeded at 15:21:17 IST. **Next →** now sits beside each question heading, highlights when the current answer is valid, and moves to the survey top on the next step as before. Selecting an answer opens that question's optional details; returning to an answered question keeps the panel open. The name step uses the same top action and enables it when a name is entered. Response fields and ordering are unchanged.

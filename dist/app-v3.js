@@ -3,7 +3,8 @@ const $=selector=>document.querySelector(selector);
 const R=window.SurveyRulesV3;
 const random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 const storageKey=R.version;
-let state={version:R.version,id:crypto.randomUUID(),styleOrder:R.shuffle(R.styles,random),productOrder:R.shuffle(R.products,random),assignments:Object.fromEntries(R.products.map(id=>[id,R.shuffle(R.styles,random)])),answers:{respondent_name:'',home_reason:'',two_wheeler_reason:'',reason:'',changes:''},step:0};
+const artworkRevision='sw-reasons-2026-09-24';
+let state={version:R.version,id:crypto.randomUUID(),styleOrder:R.shuffle(R.styles,random),productOrder:R.shuffle(R.products,random),assignments:Object.fromEntries(R.products.map(id=>[id,R.shuffle(R.styles,random)])),artworkRevision,details:{},answers:{respondent_name:'',home_reason:'',two_wheeler_reason:'',reason:'',changes:''},step:0};
 try{const saved=JSON.parse(sessionStorage.getItem(storageKey));if(saved?.version===R.version){if(saved.pendingResponse){R.validate(saved.pendingResponse);state={...saved.pendingResponse,pendingResponse:saved.pendingResponse,step:11};}else if(saved.submitted===true)state.submitted=true;}}catch{}
 const styles=state.styleOrder;
 const names={with_plinth:'3D with plinth',without_plinth:'3D without plinth',flat_2d:'Existing 2D'};
@@ -31,18 +32,19 @@ function options(q){
  const choices=q.kind==='clarity'?[['equal','Equally clear'],['none','None are clear']]:q.kind==='consistency'?[['equal','Equally consistent'],['none','None are consistent']]:[...(q.kind==='recommendation'?[['depends','Depends on the product']]:[]),['no_preference','No preference'],['none','None of these']];
  return `<div class="other-options" role="group" aria-label="Other choices">${choices.map(([v,label])=>`<button type="button" class="other-option" data-choice="${v}" aria-pressed="${answers[key()]===v}">${label}</button>`).join('')}</div>`;
 }
-function field(name,label){return `<div class="comment-field"><label for="${name}">${label}</label><textarea id="${name}" name="${name}" maxlength="1500" rows="2">${escape(comments[name])}</textarea></div>`;}
+function questionDetails(){
+ const k=key(),d=state.details?.[k]||{selected:[],custom:''};
+ return `<details class="comment question-details" ${d.selected.length||d.custom?'open':''}><summary>Add details <span>(optional)</span></summary><fieldset class="reason-options"><legend>What influenced your choice?</legend><p class="reason-help">Select all that apply, or write your own details.</p>${R.detailOptions[k].map(id=>`<label class="reason-option"><input type="checkbox" data-reason="${id}" ${d.selected.includes(id)?'checked':''}><span>${R.detailLabels[id]}</span></label>`).join('')}</fieldset><div class="comment-field"><label for="custom-detail">Anything else you’d like to add? <span>(optional)</span></label><textarea id="custom-detail" data-custom-detail maxlength="1000" rows="3" placeholder="Tell us what influenced your choice…">${escape(d.custom)}</textarea><p class="reason-help">Up to 1,000 characters.</p></div></details>`;
+}
 function render(focus=false){
  $('#form-error').hidden=true;if(state.submitted){showSuccess();return;}
  const q=steps[step];const final=step===steps.length-1;
  const title=q.kind==='name'?'What’s your name?':q.kind==='preference'?`Which illustration would you choose for ${q.product.name}?`:q.kind==='clarity'?'At this size, which illustration is easiest to make out?':q.kind==='screen'?'Which illustrations work best on this screen?':q.kind==='consistency'?'Which set feels most consistent?':'Which direction would you recommend for Offers?';
  const instruction=q.kind==='name'?'Your name will be saved with your feedback for the UX Squad review.':q.kind==='preference'?'Think about its use on the Offers page. Choose an option, then tap Next.':q.kind==='clarity'?`${q.product.name} · Compare the three illustrations at the same size.`:q.kind==='screen'?'Compare the product illustrations in the Offers screen. Choose a screen, then tap Next.':q.kind==='consistency'?'Consider how the illustrations work together across all six products.':'Consider all six products. It’s okay to prefer different styles for different products.';
  const type=q.kind==='name'?'Before you begin':q.kind==='preference'?'Product preference':q.kind==='clarity'?'Clarity at a smaller size':q.kind==='screen'?'In the Offers screen':q.kind==='consistency'?'Across the family':'Your recommendation';
- const note=q.kind==='clarity'?'Shown in a 64 px slot, matching the product cards in the supplied screen.':q.kind==='screen'?'Five product illustrations vary. The banner, Insta Flexi-cash and all interface content stay the same. Screens are scaled to fit.':'';
- let comment='';
- if(q.kind==='clarity')comment=`<details class="comment" ${comments[q.product.id+'_reason']?'open':''}><summary>Add a reason <span>(optional)</span></summary>${field(q.product.id+'_reason','What influenced your choices for this product?')}</details>`;
- if(final)comment=`<details class="comment" ${comments.reason||comments.changes?'open':''}><summary>Add your reasoning <span>(optional)</span></summary>${field('reason','What is the main reason for your recommendation?')}${field('changes','What would need to change before you would use it?')}</details>`;
- $('#screen').innerHTML=`<p class="question-kind">${type}</p><h1 tabindex="-1">${title}</h1><p class="instruction">${instruction}</p>${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="off" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():artChoices(q))+options(q)}${note?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
+ const note=q.kind==='clarity'?'Shown in a 64 px slot, matching the product cards in the supplied screen.':q.kind==='screen'?'Illustrative mockups only. Please compare the illustrations; minor UI inaccuracies shown here will not appear in the final screen.':'';
+ const comment=q.kind==='name'?'':questionDetails();
+ $('#screen').innerHTML=`<p class="question-kind">${type}</p><h1 tabindex="-1">${title}</h1><p class="instruction">${instruction}</p>${q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="off" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
  document.querySelector('main').classList.toggle('screen-comparison',q.kind==='screen');
  screenObserver.disconnect();document.querySelectorAll('.screen-viewport').forEach(el=>screenObserver.observe(el));
  $('#step-label').textContent=`${step+1} / ${steps.length}`;
@@ -60,10 +62,19 @@ $('#survey').addEventListener('click',event=>{
  document.querySelectorAll('[data-choice]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.choice===answers[key()])));
  $('#next').disabled=step===steps.length-1&&!connected;$('#form-error').hidden=true;persist();
 });
-$('#survey').addEventListener('input',event=>{if(['TEXTAREA','INPUT'].includes(event.target.tagName)&&!busy&&!state.pendingResponse&&Object.prototype.hasOwnProperty.call(R.fields,event.target.name)){comments[event.target.name]=event.target.value;$('#next').disabled=!R.validAnswer(key(),answers[key()])||(step===steps.length-1&&!connected);persist();}});
+$('#survey').addEventListener('input',event=>{
+ if(busy||state.pendingResponse)return;
+ const el=event.target;
+ if(el.matches('[data-reason], [data-custom-detail]')){
+  state.details??={};const d=state.details[key()]??={selected:[],custom:''};
+  if(el.matches('[data-reason]'))d.selected=Array.from(document.querySelectorAll('[data-reason]:checked'),c=>c.dataset.reason);
+  else d.custom=el.value;
+  persist();return;
+ }
+ if(['TEXTAREA','INPUT'].includes(event.target.tagName)&&!busy&&!state.pendingResponse&&Object.prototype.hasOwnProperty.call(R.fields,event.target.name)){comments[event.target.name]=event.target.value;$('#next').disabled=!R.validAnswer(key(),answers[key()])||(step===steps.length-1&&!connected);persist();}});
 $('#back').addEventListener('click',()=>{if(step>0&&!busy&&!state.pendingResponse){step--;persist();render(true);}});
 
-function payload(){return R.validate({version:state.version,id:state.id,styleOrder:styles,productOrder:state.productOrder,assignments:state.assignments,answers});}
+function payload(){return R.validate({version:state.version,id:state.id,styleOrder:styles,productOrder:state.productOrder,assignments:state.assignments,answers,...(state.details?{details:state.details}:{}),...(state.artworkRevision?{artworkRevision:state.artworkRevision}:{})});}
 function showSuccess(){
  screenObserver.disconnect();document.querySelector('main').classList.remove('screen-comparison');
  $('#survey').innerHTML='<section class="success"><h1 tabindex="-1">Thank you.</h1><p>Your feedback is saved.</p><button id="next-person" type="button" class="send">Start for next person</button></section>';
@@ -80,7 +91,7 @@ $('#survey').addEventListener('submit',async event=>{
  let data;try{data=state.pendingResponse||payload();state.pendingResponse=data;persist();}catch{showError('Please choose an option for each question.');return;}
  busy=true;$('#next').disabled=true;$('#next').textContent='Sending…';$('#back').disabled=true;$('#form-error').hidden=true;
  document.querySelectorAll('[data-choice],textarea,input').forEach(el=>el.disabled=true);
- try{await sendResponse(data);state.submitted=true;state.answers={};delete state.pendingResponse;persist();showSuccess();}
+ try{await sendResponse(data);state.submitted=true;state.answers={};state.details={};delete state.pendingResponse;persist();showSuccess();}
  catch{showError('Could not confirm your response. Your answers are kept here. Please retry; it won’t send a duplicate.');$('#next').disabled=false;$('#next').textContent='Try sending again';}
  finally{busy=false;}
 });

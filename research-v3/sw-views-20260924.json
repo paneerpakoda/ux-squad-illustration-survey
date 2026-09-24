@@ -1,0 +1,37 @@
+{
+  "revision": "sw-reasons-2026-09-24",
+  "date": "2026-09-24",
+  "reference": "User-supplied Offers screen, codex-clipboard-8c1733d7-1099-4937-8096-4c6b5659d2c3.png",
+  "scope": "Survey study candidates, not approved library masters",
+  "view_audit": {
+    "home": "southwest",
+    "car": "southwest",
+    "two_wheeler": "existing southwest pair retained",
+    "personal": "front, matching screen",
+    "education": "existing three-quarter view retained, matching screen",
+    "rupay": "existing view retained; not depicted in reference",
+    "flexi": "existing constant wallet illustration retained"
+  },
+  "edits": [
+    {
+      "product": "home",
+      "with_plinth_source": "/Users/root1/ICICI/Offers Page/3D Icons - All/Home/Home Loan - South-West View - Version 02 - 512px.png",
+      "with_plinth_copy": "dist/assets/home-sw-with_plinth-20260924.png",
+      "without_plinth_output": "dist/assets/home-sw-without_plinth-20260924.png",
+      "generator": "built-in image_gen reference edit",
+      "selected_generation": "exec-323d6c3c-216b-476a-a87d-ae757f140c76.png",
+      "edit_intent": "Remove only the plinth; preserve southwest camera, objects, props, lighting and composition.",
+      "limitations": "Generated study candidate on opaque white; visual differences beyond plinth remain possible."
+    },
+    {
+      "product": "car",
+      "with_plinth_source": "/Users/root1/ICICI/Offers Page/3D Icons - All/Vehicle/Car Loan - South-West View - Version 02 - 512px.png",
+      "with_plinth_copy": "dist/assets/car-sw-with_plinth-20260924.png",
+      "without_plinth_output": "dist/assets/car-sw-without_plinth-20260924.png",
+      "generator": "built-in image_gen reference edit",
+      "selected_generation": "exec-db2b6228-747c-482c-9333-58d5648732c0.png",
+      "edit_intent": "Remove only the plinth; preserve southwest camera, objects, props, lighting and composition.",
+      "limitations": "Generated study candidate on opaque white; visual differences beyond plinth remain possible."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "version": "ux-illustrations-2026-09-v3",
-  "note": "Active 2D comparisons use supplied 360 × 255 PNG originals from 24 September. Superseded low-resolution assets are retained for earlier releases; no-plinth studies remain opaque-white drafts.",
+  "note": "Active Car and Home pairs use southwest views. With-plinth assets are supplied Version 02 originals; no-plinth variants are AI-edited study drafts. Six sharp 2D PNG originals remain unchanged. Superseded assets are retained for historical releases.",
   "files": [
     {
       "file": "assets/car-flat_2d.webp",
@@ -196,7 +196,27 @@
       "file": "assets/two_wheeler-flat_2d-original-20260924.png",
       "bytes": 29094,
       "sha256": "4a3fb6b2e2cd5a8cdd4f6f49690ec38fddbdeb5467a3bfc0c6ffe4757725306f"
+    },
+    {
+      "file": "assets/car-sw-with_plinth-20260924.png",
+      "bytes": 157307,
+      "sha256": "21bf852e1dde02b3574fc1b7045713c5858226deef14851ae7a02b9d91b2e3ea"
+    },
+    {
+      "file": "assets/car-sw-without_plinth-20260924.png",
+      "bytes": 935573,
+      "sha256": "44c60b7963be2654ffb1be63bc3f1a426124c5321da83e280fe1d2d62432e4bc"
+    },
+    {
+      "file": "assets/home-sw-with_plinth-20260924.png",
+      "bytes": 183700,
+      "sha256": "696a63d30566e8a7da800934bf9c772846125e69db21d70c98103087cbb2a209"
+    },
+    {
+      "file": "assets/home-sw-without_plinth-20260924.png",
+      "bytes": 1110288,
+      "sha256": "ab0b67f20de8e3b91e32097c1629f154c540e2e3c7f5e5d3397cdbdf9ad0c44f"
     }
   ],
-  "artwork_revision": "2d-originals-2026-09-24"
+  "artwork_revision": "sw-reasons-2026-09-24"
 }

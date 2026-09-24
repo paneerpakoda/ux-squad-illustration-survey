@@ -4,7 +4,7 @@
 
 ## Version 3
 
-Required name followed by eleven questions across six products. Large images, southwest two-wheeler pairs, two size checks, full Offers screen comparison, explicit Next/Back, and Send feedback. The Sheet stays private. Names and answers are recorded together in **Responses v3**; earlier **Responses** records remain unchanged. No email is requested. See SURVEY.md for interpretation and limits.
+Required name followed by eleven questions across six products. Large images, southwest Home, Car and Two-Wheeler pairs, two size checks, full Offers screen comparison, explicit Next/Back, and Send feedback. The Sheet stays private. Names and answers are recorded together in **Responses v3**; earlier **Responses** records remain unchanged. Each feedback question has optional multi-select reasons and custom text. Question 10 compares illustrative phone mockups. No email is requested. See SURVEY.md for interpretation and limits.
 
 Publication status and live-save verification are recorded in RELEASE.md. Files in dist/ are published through the existing GitHub Pages workflow. Only confirmed Google acknowledgment shows success. A timeout preserves the exact pending payload and response ID; retry cannot add a duplicate with that ID. Fresh unfinished visits start blank; pending/submitted sessions are retained.
 
@@ -37,3 +37,7 @@ After each confirmed save, click **Start for next person**. The survey returns t
 Use the same public survey link for vendor designers invited by the UX Squad. No Google sign-in or Sheet access is needed to respond. Their names and answers use the existing **Responses v3** tab in the same private Sheet. Keep the 16–17 September internal findings separate when analysing the expanded audience. For easier identification, invite vendor participants to include their company alongside their name.
 
 Mobile choices and screen comparisons stack vertically. The Offers previews use a CSS aspect ratio to avoid a WebKit resize-observer loop. Phone-sized Chromium and WebKit flows were checked on 24 September; actual handset and WhatsApp in-app-browser checks are not claimed.
+
+## Optional details and artwork revision
+
+Collector deployment version 4 accepts older v2/v3 payloads and new optional per-question details. Existing Responses v3 columns A:Y stay in place; Z:AB append `additional_details`, `details_json`, and `artwork_revision`. Empty grid columns are expanded when necessary. New responses carry `sw-reasons-2026-09-24`; earlier rows remain unmodified and have no revision tag.

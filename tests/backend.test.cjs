@@ -6,7 +6,8 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..');
 function fixture(){
  const rows=[];let writes=0;let locked=false;
- const sheet={getLastRow:()=>rows.length,setFrozenRows(){},appendRow(row){writes++;rows.push(Array.from(row));},getRange(row,col,count=1,width=1){return {getValues:()=>rows.slice(row-1,row-1+count).map(r=>r.slice(col-1,col-1+width)),getValue:()=>rows[row-1][col-1],createTextFinder(value){return {matchEntireCell(){return this;},findNext(){const i=rows.findIndex((r,j)=>j>=row-1&&r[col-1]===value);return i<0?null:{getRow:()=>i+1};}};}};}};
+ let columns=26;
+ const sheet={getMaxColumns:()=>columns,insertColumnsAfter(after,count){assert.equal(after,columns);columns+=count;},getLastRow:()=>rows.length,setFrozenRows(){},appendRow(row){writes++;rows.push(Array.from(row));},getRange(row,col,count=1,width=1){assert.ok(col+width-1<=columns);return {getValues:()=>rows.slice(row-1,row-1+count).map(r=>r.slice(col-1,col-1+width)),getValue:()=>rows[row-1][col-1],createTextFinder(value){return {matchEntireCell(){return this;},findNext(){const i=rows.findIndex((r,j)=>j>=row-1&&r[col-1]===value);return i<0?null:{getRow:()=>i+1};}};}};}};
  const ctx=vm.createContext({Date,SpreadsheetApp:{openById:()=>({getSheetByName:()=>sheet}),flush(){}},PropertiesService:{getScriptProperties:()=>({getProperty:()=> 'test-sheet'})},LockService:{getScriptLock:()=>({tryLock:()=>{locked=true;return true;},releaseLock:()=>{locked=false;}})},HtmlService:{XFrameOptionsMode:{ALLOWALL:'allowall'},createHtmlOutput:html=>({html,setXFrameOptionsMode(){return this;}})}});
  vm.runInContext(fs.readFileSync(path.join(root,'backend/Code.gs'),'utf8'),ctx);
  const R=ctx.SurveyRules;

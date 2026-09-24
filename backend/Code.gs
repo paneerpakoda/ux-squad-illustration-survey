@@ -30,20 +30,32 @@ var SurveyRulesV3 = (function(){
  const choices=[...styles,'no_preference','none'];
  const fields={respondent_name:100,...Object.fromEntries(products.map(p=>[p+'_preference',choices]))};
  Object.assign(fields,{home_clarity:[...styles,'equal','none'],two_wheeler_clarity:[...styles,'equal','none'],screen:choices,consistency:[...styles,'equal','none'],recommendation:[...choices,'depends'],home_reason:1500,two_wheeler_reason:1500,reason:1500,changes:1500});
+ const detailQuestions=[...products.map(p=>p+'_preference'),'home_clarity','two_wheeler_clarity','screen','consistency','recommendation'];
+ const detailLabels={recognition:'Product recognition',clarity:'Visual clarity',simplicity:'Simplicity / amount of detail',colour:'Colours and contrast',perspective:'Composition and viewing angle',brand:'Fit with the bank’s visual style',personal:'Personal preference',small_size:'Legibility at this size',silhouette:'Shape and silhouette',ui_fit:'Fit with the surrounding UI',prominence:'Visual prominence',consistency:'Consistency across products',flexibility:'Suitability across different products'};
+ const detailOptions=Object.fromEntries(detailQuestions.map(k=>[k,k.endsWith('_clarity')?['small_size','silhouette','colour','simplicity','recognition']:k==='screen'?['ui_fit','prominence','recognition','consistency','colour','brand']:k==='consistency'?['consistency','perspective','colour','simplicity','brand']:k==='recommendation'?['recognition','clarity','brand','consistency','flexibility','personal']:['recognition','clarity','simplicity','colour','perspective','brand','personal']]));
+ function validateDetails(details){
+  if(!details||typeof details!=='object'||Array.isArray(details)||Object.keys(details).some(k=>!detailQuestions.includes(k)))throw Error('Invalid question details.');
+  for(const [k,d] of Object.entries(details)){
+   if(!d||typeof d!=='object'||Array.isArray(d)||Object.keys(d).some(k=>!['selected','custom'].includes(k))||!Array.isArray(d.selected)||new Set(d.selected).size!==d.selected.length||d.selected.some(v=>!detailOptions[k].includes(v))||typeof d.custom!=='string'||d.custom.length>1000)throw Error('Invalid question details.');
+  }
+  return details;
+ }
  function validAnswer(k,v){const r=fields[k];if(k==='respondent_name')return typeof v==='string'&&v.trim().length>0&&v.length<=100;return Object.prototype.hasOwnProperty.call(fields,k)&&typeof v==='string'&&(typeof r==='number'?v.length<=r:r.includes(v));}
  function permutation(a,b){return Array.isArray(a)&&a.length===b.length&&new Set(a).size===b.length&&a.every(v=>b.includes(v));}
  function validate(p){
   if(!p||typeof p!=='object'||Array.isArray(p)||p.version!==version)throw Error('Unsupported survey version.');
-  if(Object.keys(p).some(k=>!['version','id','styleOrder','productOrder','assignments','answers'].includes(k)))throw Error('Unexpected response field.');
+  if(Object.keys(p).some(k=>!['version','id','styleOrder','productOrder','assignments','answers','details','artworkRevision'].includes(k)))throw Error('Unexpected response field.');
   if(typeof p.id!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.id))throw Error('Invalid response ID.');
   if(!permutation(p.productOrder,products)||!permutation(p.styleOrder,styles))throw Error('Invalid presentation order.');
   if(!p.assignments||!permutation(Object.keys(p.assignments),products)||products.some(id=>!permutation(p.assignments[id],styles)))throw Error('Invalid product assignments.');
   if(!p.answers||typeof p.answers!=='object'||Array.isArray(p.answers)||Object.keys(p.answers).some(k=>!Object.prototype.hasOwnProperty.call(fields,k)))throw Error('Unexpected answer field.');
   for(const k of Object.keys(fields))if(!validAnswer(k,p.answers[k]))throw Error('Missing or invalid answer: '+k);
+  if(p.details!==undefined)validateDetails(p.details);
+  if(p.artworkRevision!==undefined&&(typeof p.artworkRevision!=='string'||!/^[a-z0-9-]{1,64}$/.test(p.artworkRevision)))throw Error('Invalid artwork revision.');
   return p;
  }
  function shuffle(a,random){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
- return {version,styles,products,choices,fields,validAnswer,validate,permutation,shuffle};
+ return {version,styles,products,choices,fields,detailQuestions,detailLabels,detailOptions,validateDetails,validAnswer,validate,permutation,shuffle};
 })();
 
 /* Allowed survey origins. The loopback origin supports local integration checks. */
@@ -62,15 +74,25 @@ function setup() {
 }
 function configuration(p){
   if(p.version===SurveyRules.version)return {rules:SurveyRules,name:SHEET_NAME,header:HEADER};
-  if(p.version===SurveyRulesV3.version)return {rules:SurveyRulesV3,name:'Responses v3',header:['received_at','response_id','survey_version','version_A','version_B','version_C','product_order','product_assignments',...Object.keys(SurveyRulesV3.fields),'response_json']};
+  if(p.version===SurveyRulesV3.version)return {rules:SurveyRulesV3,name:'Responses v3',header:['received_at','response_id','survey_version','version_A','version_B','version_C','product_order','product_assignments',...Object.keys(SurveyRulesV3.fields),'response_json','additional_details','details_json','artwork_revision']};
   throw Error('Unsupported survey version.');
 }
 function ensureHeader(sheet,header=HEADER){
+  const columns=sheet.getMaxColumns();
+  if(columns<header.length)sheet.insertColumnsAfter(columns,header.length-columns);
   if(sheet.getLastRow()===0){sheet.appendRow(header);sheet.setFrozenRows(1);return;}
-  if(JSON.stringify(sheet.getRange(1,1,1,header.length).getValues()[0])!==JSON.stringify(header))throw Error('Unexpected response sheet columns.');
+  const existing=sheet.getRange(1,1,1,header.length).getValues()[0];
+  if(JSON.stringify(existing)===JSON.stringify(header))return;
+  const originalLength=header.indexOf('additional_details');
+  if(originalLength>0&&JSON.stringify(existing.slice(0,originalLength))===JSON.stringify(header.slice(0,originalLength))&&existing.slice(originalLength).every(v=>v==='')){
+    sheet.getRange(1,originalLength+1,1,header.length-originalLength).setValues([header.slice(originalLength)]);return;
+  }
+  throw Error('Unexpected response sheet columns.');
 }
 function cell(value){const text=String(value);return /^[\s]*[=+\-@]/.test(text)?"'"+text:text;}
-function canonical(p,rules){return JSON.stringify({version:p.version,id:p.id,styleOrder:p.styleOrder,productOrder:p.productOrder,...(p.assignments?{assignments:Object.fromEntries(rules.products.map(id=>[id,p.assignments[id]]))}:{}),answers:Object.fromEntries(Object.keys(rules.fields).map(k=>[k,p.answers[k]]))});}
+function canonical(p,rules){return JSON.stringify({version:p.version,id:p.id,styleOrder:p.styleOrder,productOrder:p.productOrder,...(p.assignments?{assignments:Object.fromEntries(rules.products.map(id=>[id,p.assignments[id]]))}:{}),answers:Object.fromEntries(Object.keys(rules.fields).map(k=>[k,p.answers[k]])),...(p.details!==undefined?{details:orderedDetails(p.details,rules)}:{}),...(p.artworkRevision!==undefined?{artworkRevision:p.artworkRevision}:{})});}
+function orderedDetails(details,rules){return Object.fromEntries(rules.detailQuestions.filter(k=>Object.prototype.hasOwnProperty.call(details,k)).map(k=>[k,{selected:rules.detailOptions[k].filter(v=>details[k].selected.includes(v)),custom:details[k].custom}]));}
+function readableDetails(details,rules){return Object.entries(orderedDetails(details,rules)).filter(([,d])=>d.selected.length||d.custom).map(([k,d])=>k+'\nReasons: '+(d.selected.map(v=>rules.detailLabels[v]).join('; ')||'—')+(d.custom?'\nAdditional: '+d.custom:'')).join('\n\n');}
 function saveResponse(p){
   const config=configuration(p);config.rules.validate(p);
   const lock=LockService.getScriptLock();
@@ -85,9 +107,10 @@ function saveResponse(p){
     const serialized=canonical(p,config.rules);
     if(sheet.getLastRow()>1){
       const match=sheet.getRange(2,2,sheet.getLastRow()-1,1).createTextFinder(p.id).matchEntireCell(true).findNext();
-      if(match){if(sheet.getRange(match.getRow(),config.header.length).getValue()!==serialized)throw Error('Response already saved with different answers.');return;}
+      if(match){if(sheet.getRange(match.getRow(),config.header.indexOf('response_json')+1).getValue()!==serialized)throw Error('Response already saved with different answers.');return;}
     }
     const row=[new Date().toISOString(),p.id,p.version,...p.styleOrder,p.productOrder.join(' → '),...(p.assignments?[JSON.stringify(p.assignments)]:[]),...Object.keys(config.rules.fields).map(k=>cell(p.answers[k])),serialized];
+    if(config.rules===SurveyRulesV3)row.push(cell(readableDetails(p.details||{},config.rules)),JSON.stringify(orderedDetails(p.details||{},config.rules)),p.artworkRevision||'');
     sheet.appendRow(row);SpreadsheetApp.flush();
   }finally{lock.releaseLock();}
 }
@@ -97,7 +120,7 @@ function doPost(e){
   let id='',ok=false;
   try{
     if(!SURVEY_ORIGINS.includes(input.origin)||!nonce)throw Error('Invalid origin.');
-    if(typeof input.payload!=='string'||input.payload.length>16000)throw Error('Invalid response size.');
+    if(typeof input.payload!=='string'||input.payload.length>32000)throw Error('Invalid response size.');
     const p=JSON.parse(input.payload);id=typeof p.id==='string'?p.id:'';
     saveResponse(p);ok=true;
   }catch(error){/* No response contents or personal comments in logs. */}
@@ -107,4 +130,4 @@ function doPost(e){
   const html='<!doctype html><html><body><p>'+ (ok?'Feedback saved.':'Feedback could not be saved. Please return to the survey and retry.') +'</p><script>const m='+message+';const o='+target+';for(const w of [window.parent,window.parent.parent,window.top]){try{w.postMessage(m,o);}catch(e){}}</script></body></html>';
   return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
-function doGet(){return HtmlService.createHtmlOutput('Illustration survey collector v3. Supports v2 and v3. Open the survey link to participate.');}
+function doGet(){return HtmlService.createHtmlOutput('Illustration survey collector v3-details. Supports v2 and v3 with optional question details. Open the survey link to participate.');}

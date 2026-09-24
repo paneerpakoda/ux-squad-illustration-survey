@@ -14,4 +14,12 @@ Limits: responses collected before the 24 September artwork replacement used low
 
 All six 2D assets now use the supplied PNG originals, copied unchanged. Product, clarity, family, recommendation and Offers screen comparisons use the same catalogue. Image slots, 3D artwork, questions and randomization stay the same. Source filenames and hashes are recorded in research-v3/2d-originals-20260924.json.
 
-Review earlier results as a separate artwork cohort: reduced 2D legibility could have affected preferences. The deployment time is a practical boundary, not a guaranteed row-level identifier: already-open pages may submit the earlier artwork afterward. The existing v3 schema has no per-response artwork-revision field. Do not reinterpret the earlier 17-response findings as evaluations of the sharper PNG set.
+Review earlier results as a separate artwork cohort: reduced 2D legibility could have affected preferences. The deployment time is a practical boundary, not a guaranteed row-level identifier: already-open pages may submit the earlier artwork afterward. Before the southwest/reasons update, v3 had no per-response artwork-revision field. Do not reinterpret the earlier 17-response findings as evaluations of the sharper PNG set.
+
+## 24 September — Southwest views, reasons and phone mockups
+
+Car and Home use matched southwest directions across individual, clarity, family and screen comparisons. With-plinth files are supplied Version 02 originals; no-plinth files are reference-edited study drafts. Other 3D views were checked against the supplied Offers screen; RuPay is absent from that reference and retains its existing view.
+
+All eleven feedback questions offer optional multi-select reasons and up to 1,000 characters of custom details. The name step remains separate. Reasons are neutral dimensions of a decision, not a positive/negative rating; interpret them alongside the chosen answer and custom text. Question 10 crops the page to a 360 × 800 mobile viewport inside phone frames and explicitly describes the screens as illustrative, with minor UI inaccuracies excluded from the final screen.
+
+New submissions identify artwork revision `sw-reasons-2026-09-24` and save reasons/comments in the same Responses v3 tab. Earlier clients and pending retries remain accepted without a revision tag. Do not assign old rows to this revision retroactively.

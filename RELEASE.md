@@ -32,3 +32,18 @@ Hosted verification also passed all seven browser/width cases after deployment. 
 Replaced all six active 2D comparisons with the user-supplied 360 × 255 PNG originals, byte-identical to the source files. New filenames and catalogue cache version avoid reusing the blurry WebP cache. 3D artwork, display slots, questionnaire, collector and existing responses are unchanged. Earlier findings belong to the earlier artwork; SURVEY.md records the deployment-boundary limitation.
 
 Validation: all six replacements match source SHA-256 hashes. All 25 active 2D placements load the 360 × 255 originals across the twelve-step flow; Chromium 320/1440 px and WebKit 390 px pass with no overflow/runtime errors. All 46 Node tests pass. Google submissions were intercepted; no test rows were added.
+
+Published as `24eee2e`; Pages run `35979769111` succeeded and completed at 24 September 2026, 14:42:19 IST. Use this recorded cutover with the already-open-page caveat when analysing response timing.
+Hosted full-flow checks passed on Chromium 320/1440 px and WebKit 390 px after deployment; every replacement has the expected original dimensions.
+
+## 24 September — Southwest pairs, optional details and phone viewports
+
+Published code `366a9283731ce4e8a4ef6b42242b9dedac17866d`; Pages run `35982603079` succeeded at 15:10:21 IST. Existing collector updated to Apps Script deployment version 4 at 15:08 IST, keeping the same endpoint and private Sheet.
+
+Home and Car now use southwest views in both 3D treatments throughout the survey. With-plinth files are supplied Version 02 originals; reference-edited no-plinth files remain study candidates. Other 3D views were checked against the supplied Offers screen; RuPay remains unchanged because it is absent from that reference. The six sharp 2D originals remain unchanged.
+
+Each feedback question offers optional multi-select reasons and custom text. Question 10 shows a cropped 360 × 800 viewport inside each phone frame, with an illustrative-purpose note above the choices. Mobile comparisons stack vertically. New rows include artwork revision `sw-reasons-2026-09-24`. Responses v3 columns A:Y are preserved; additional_details, details_json and artwork_revision append at Z:AB. Old payloads and pending retries remain supported.
+
+Validation: 51 Node tests pass, including old-header migration, grid expansion, prior retry compatibility, multi-select/custom persistence, input validation and deduplication. Local browser checks verified optional blank details, Back retention, all eleven details sections, loaded artwork, 360:800 crop and no horizontal overflow at 320/768/1024/1440 px. No runtime errors in local or hosted checked flows. Physical handset/WhatsApp testing is not claimed.
+
+A labelled live submission through the hosted survey returned confirmed success. Responses v3 row 24 contained UUID 98c72372-61f4-4a98-919d-5f4830fe0bc1, all eleven details objects with two selections and custom text each, and the correct artwork revision. Only the verified synthetic range A24:AB24 was cleared afterward; existing participant rows and headers remain. Start for next person returned to a blank name entry.

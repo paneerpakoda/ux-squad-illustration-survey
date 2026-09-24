@@ -34,7 +34,7 @@ function options(q){
 }
 function questionDetails(){
  const k=key(),d=state.details?.[k]||{selected:[],custom:''};
- return `<details class="comment question-details" ${d.selected.length||d.custom?'open':''}><summary>Add details <span>(optional)</span></summary><fieldset class="reason-options"><legend>What influenced your choice?</legend><p class="reason-help">Select all that apply, or write your own details.</p>${R.detailOptions[k].map(id=>`<label class="reason-option"><input type="checkbox" data-reason="${id}" ${d.selected.includes(id)?'checked':''}><span>${R.detailLabels[id]}</span></label>`).join('')}</fieldset><div class="comment-field"><label for="custom-detail">Anything else you’d like to add? <span>(optional)</span></label><textarea id="custom-detail" data-custom-detail maxlength="1000" rows="3" placeholder="Tell us what influenced your choice…">${escape(d.custom)}</textarea><p class="reason-help">Up to 1,000 characters.</p></div></details>`;
+ return `<details class="comment question-details" ${d.selected.length||d.custom||answers[k]?'open':''}><summary>Add details <span>(optional)</span></summary><fieldset class="reason-options"><legend>What influenced your choice?</legend><p class="reason-help">Select all that apply, or write your own details.</p>${R.detailOptions[k].map(id=>`<label class="reason-option"><input type="checkbox" data-reason="${id}" ${d.selected.includes(id)?'checked':''}><span>${R.detailLabels[id]}</span></label>`).join('')}</fieldset><div class="comment-field"><label for="custom-detail">Anything else you’d like to add? <span>(optional)</span></label><textarea id="custom-detail" data-custom-detail maxlength="1000" rows="3" placeholder="Tell us what influenced your choice…">${escape(d.custom)}</textarea><p class="reason-help">Up to 1,000 characters.</p></div></details>`;
 }
 function render(focus=false){
  $('#form-error').hidden=true;if(state.submitted){showSuccess();return;}
@@ -44,13 +44,15 @@ function render(focus=false){
  const type=q.kind==='name'?'Before you begin':q.kind==='preference'?'Product preference':q.kind==='clarity'?'Clarity at a smaller size':q.kind==='screen'?'In the Offers screen':q.kind==='consistency'?'Across the family':'Your recommendation';
  const note=q.kind==='clarity'?'Shown in a 64 px slot, matching the product cards in the supplied screen.':q.kind==='screen'?'Illustrative mockups only. Please compare the illustrations; minor UI inaccuracies shown here will not appear in the final screen.':'';
  const comment=q.kind==='name'?'':questionDetails();
- $('#screen').innerHTML=`<p class="question-kind">${type}</p><h1 tabindex="-1">${title}</h1><p class="instruction">${instruction}</p>${q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="off" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
+ const nextButton=$('#next');nextButton.remove();
+ $('#screen').innerHTML=`<p class="question-kind">${type}</p><div class="question-heading"><h1 tabindex="-1">${title}</h1></div><p class="instruction">${instruction}</p>${q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="off" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
+ document.querySelector('.question-heading').append(nextButton);
  document.querySelector('main').classList.toggle('screen-comparison',q.kind==='screen');
  screenObserver.disconnect();document.querySelectorAll('.screen-viewport').forEach(el=>screenObserver.observe(el));
  $('#step-label').textContent=`${step+1} / ${steps.length}`;
  $('#progress-fill').style.width=`${(step+1)/steps.length*100}%`;
  $('#back').hidden=step===0;
- $('#next').disabled=!R.validAnswer(key(),answers[key()])||(final&&!connected);$('#next').textContent=final?(state.pendingResponse?'Try sending again':'Send feedback'):'Next';
+ $('#next').disabled=!R.validAnswer(key(),answers[key()])||(final&&!connected);$('#next').textContent=final?(state.pendingResponse?'Try sending again':'Send feedback'):'Next →';
  $('#back').disabled=!!state.pendingResponse;
  if(state.pendingResponse)document.querySelectorAll('[data-choice],textarea,input').forEach(el=>el.disabled=true);
  if(focus){$('#screen h1').focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});}
@@ -60,6 +62,7 @@ $('#survey').addEventListener('click',event=>{
  if([...document.querySelectorAll('.art-options img')].some(img=>!img.complete||!img.naturalWidth)){showError('The illustrations are still loading. Please try again in a moment.');return;}
  answers[key()]=button.dataset.choice;
  document.querySelectorAll('[data-choice]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.choice===answers[key()])));
+ const details=$('.question-details');if(details)details.open=true;
  $('#next').disabled=step===steps.length-1&&!connected;$('#form-error').hidden=true;persist();
 });
 $('#survey').addEventListener('input',event=>{

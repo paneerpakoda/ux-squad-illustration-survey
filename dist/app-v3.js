@@ -15,7 +15,7 @@ const endpoint=window.SURVEY_CONFIG?.endpoint||'';
 const connected=/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(endpoint);
 function persist(){try{sessionStorage.setItem(storageKey,JSON.stringify({...state,step}));}catch{}}
 function showError(message){$('#form-error').textContent=message;$('#form-error').hidden=false;}
-const screenObserver=new ResizeObserver(entries=>entries.forEach(({target,contentRect})=>{target.style.height=(contentRect.width/360*1126)+'px';target.firstElementChild.style.transform=`scale(${contentRect.width/360})`;}));
+const screenObserver=new ResizeObserver(entries=>entries.forEach(({target,contentRect})=>{target.firstElementChild.style.transform=`scale(${contentRect.width/360})`;}));
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const key=()=>steps[step].kind==='name'?'respondent_name':steps[step].product?steps[step].product.id+'_'+steps[step].kind:steps[step].kind;
 function artwork(product,style){return product.images[style]?`<img src="${product.images[style]}" alt="${escape(product.name)}, ${names[style]}" width="208" height="208">`:'<span class="missing-art"><span>Artwork pending</span><small>Matching no-plinth version needed</small></span>';}

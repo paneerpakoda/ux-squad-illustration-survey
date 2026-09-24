@@ -31,3 +31,9 @@ Git commit 06afe4f retains the prior public survey; the canonical workspace also
 ## Taking responses on one laptop
 
 After each confirmed save, click **Start for next person**. The survey returns to a blank name entry with cleared answers and a new response ID. Previously saved responses stay in Google Sheets. If a save cannot be confirmed, retry it before handing over the laptop; the restart button appears only after confirmation.
+
+## Sharing with vendor designers
+
+Use the same public survey link for vendor designers invited by the UX Squad. No Google sign-in or Sheet access is needed to respond. Their names and answers use the existing **Responses v3** tab in the same private Sheet. Keep the 16–17 September internal findings separate when analysing the expanded audience. For easier identification, invite vendor participants to include their company alongside their name.
+
+Mobile choices and screen comparisons stack vertically. The Offers previews use a CSS aspect ratio to avoid a WebKit resize-observer loop. Phone-sized Chromium and WebKit flows were checked on 24 September; actual handset and WhatsApp in-app-browser checks are not claimed.

@@ -1,6 +1,6 @@
 {
   "version": "ux-illustrations-2026-09-v3",
-  "note": "Selected survey assets; new no-plinth studies are opaque-white drafts. Original 2D exports remain low resolution.",
+  "note": "Active 2D comparisons use supplied 360 × 255 PNG originals from 24 September. Superseded low-resolution assets are retained for earlier releases; no-plinth studies remain opaque-white drafts.",
   "files": [
     {
       "file": "assets/car-flat_2d.webp",
@@ -166,6 +166,37 @@
       "file": "assets/two_wheeler-without_plinth.png",
       "bytes": 1138288,
       "sha256": "f46e3b62f665a0de51a6ded0a660f862ed1ac6b1f06b35ea9f70a819218b8f0e"
+    },
+    {
+      "file": "assets/home-flat_2d-original-20260924.png",
+      "bytes": 10897,
+      "sha256": "e1e6ccb87fffd6d34a7dd6b87b113100cfd2aa92b48c6e736f94f60b145e7240"
+    },
+    {
+      "file": "assets/personal-flat_2d-original-20260924.png",
+      "bytes": 27817,
+      "sha256": "94023aa5c375e860912fdff0f4240186de05acf7f50674f31125b6e4fabe6c67"
+    },
+    {
+      "file": "assets/car-flat_2d-original-20260924.png",
+      "bytes": 24026,
+      "sha256": "29063981bbf0288c0e9a0b04d705596556427aa0ad34f6647e145f0ebe1841bb"
+    },
+    {
+      "file": "assets/education-flat_2d-original-20260924.png",
+      "bytes": 15334,
+      "sha256": "31287e50b9eccf49d44772af20d637b50e47cb495a6eaccf8bcded65e23ef6ab"
+    },
+    {
+      "file": "assets/rupay-flat_2d-original-20260924.png",
+      "bytes": 8940,
+      "sha256": "60bc31e3d66afb51e9dc357a16c528082aa21548deeac3d9cd1b5174474fd07b"
+    },
+    {
+      "file": "assets/two_wheeler-flat_2d-original-20260924.png",
+      "bytes": 29094,
+      "sha256": "4a3fb6b2e2cd5a8cdd4f6f49690ec38fddbdeb5467a3bfc0c6ffe4757725306f"
     }
-  ]
+  ],
+  "artwork_revision": "2d-originals-2026-09-24"
 }

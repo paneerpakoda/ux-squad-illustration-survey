@@ -23,3 +23,12 @@ Shared-laptop update deployed as `a2c6191`; Pages run `35075731515` succeeded. T
 Mihika requested feedback from designers at partner vendors. Reused the existing public link, v3 response schema, collector endpoint and private Responses v3 tab. No backend or response changes. The anonymous collector status page is reachable.
 
 Fixed a WebKit ResizeObserver notification loop in the Offers screen comparison: CSS now controls viewport aspect ratio, while the observer only scales the preview content. All 46 Node tests pass. Full twelve-step flows pass at 320, 360, 430, 768, 1024 and 1440 px in Chromium and at 390 px in WebKit, with loaded artwork, mobile stacking, no horizontal overflow, Back retention and no runtime errors. Submission confirmation was intercepted for these checks; no test rows were added. Prior real-save verification is recorded above.
+
+Mobile fix published from `62696ff`; GitHub Pages run `35964565723` succeeded.
+Hosted verification also passed all seven browser/width cases after deployment. Google requests were intercepted during the full flows.
+
+## 24 September — Original 2D artwork
+
+Replaced all six active 2D comparisons with the user-supplied 360 × 255 PNG originals, byte-identical to the source files. New filenames and catalogue cache version avoid reusing the blurry WebP cache. 3D artwork, display slots, questionnaire, collector and existing responses are unchanged. Earlier findings belong to the earlier artwork; SURVEY.md records the deployment-boundary limitation.
+
+Validation: all six replacements match source SHA-256 hashes. All 25 active 2D placements load the 360 × 255 originals across the twelve-step flow; Chromium 320/1440 px and WebKit 390 px pass with no overflow/runtime errors. All 46 Node tests pass. Google submissions were intercepted; no test rows were added.

@@ -1,0 +1,61 @@
+{
+  "artwork_revision": "2d-originals-2026-09-24",
+  "source_directory": "2D Illustrations (user-supplied originals)",
+  "note": "Exact supplied PNGs copied without regeneration, resizing or sharpening. Schema/collector unchanged. Earlier submissions used the prior WebP assets; already-open pages can still submit old artwork after deployment.",
+  "files": [
+    {
+      "product": "home",
+      "source_file": "Home Loan.png",
+      "previous_asset": "assets/home-flat_2d.webp",
+      "asset": "assets/home-flat_2d-original-20260924.png",
+      "sha256": "e1e6ccb87fffd6d34a7dd6b87b113100cfd2aa92b48c6e736f94f60b145e7240",
+      "width": 360,
+      "height": 255
+    },
+    {
+      "product": "personal",
+      "source_file": "Personal Loan.png",
+      "previous_asset": "assets/personal-flat_2d.webp",
+      "asset": "assets/personal-flat_2d-original-20260924.png",
+      "sha256": "94023aa5c375e860912fdff0f4240186de05acf7f50674f31125b6e4fabe6c67",
+      "width": 360,
+      "height": 255
+    },
+    {
+      "product": "car",
+      "source_file": "Car loan.png",
+      "previous_asset": "assets/car-flat_2d.webp",
+      "asset": "assets/car-flat_2d-original-20260924.png",
+      "sha256": "29063981bbf0288c0e9a0b04d705596556427aa0ad34f6647e145f0ebe1841bb",
+      "width": 360,
+      "height": 255
+    },
+    {
+      "product": "education",
+      "source_file": "Education Loan.png",
+      "previous_asset": "assets/education-flat_2d.webp",
+      "asset": "assets/education-flat_2d-original-20260924.png",
+      "sha256": "31287e50b9eccf49d44772af20d637b50e47cb495a6eaccf8bcded65e23ef6ab",
+      "width": 360,
+      "height": 255
+    },
+    {
+      "product": "rupay",
+      "source_file": "RuPay CC.png",
+      "previous_asset": "assets/rupay-flat_2d.webp",
+      "asset": "assets/rupay-flat_2d-original-20260924.png",
+      "sha256": "60bc31e3d66afb51e9dc357a16c528082aa21548deeac3d9cd1b5174474fd07b",
+      "width": 360,
+      "height": 255
+    },
+    {
+      "product": "two_wheeler",
+      "source_file": "Two-wheeler Loan.png",
+      "previous_asset": "assets/two_wheeler-flat_2d.webp",
+      "asset": "assets/two_wheeler-flat_2d-original-20260924.png",
+      "sha256": "4a3fb6b2e2cd5a8cdd4f6f49690ec38fddbdeb5467a3bfc0c6ffe4757725306f",
+      "width": 360,
+      "height": 255
+    }
+  ]
+}

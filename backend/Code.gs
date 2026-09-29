@@ -21,7 +21,6 @@ var SurveyRules = (function () {
   function shuffle(values,random){const result=values.slice();for(let i=result.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}return result;}
   return {version,styles,products,choices,fields,validAnswer,validate,permutation,shuffle};
 })();
-
 var SurveyRulesV3 = (function(){
  'use strict';
  const version='ux-illustrations-2026-09-v3';
@@ -57,7 +56,6 @@ var SurveyRulesV3 = (function(){
  function shuffle(a,random){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
  return {version,styles,products,choices,fields,detailQuestions,detailLabels,detailOptions,validateDetails,validAnswer,validate,permutation,shuffle};
 })();
-
 /* Allowed survey origins. The loopback origin supports local integration checks. */
 const SURVEY_ORIGINS = ['https://paneerpakoda.github.io', 'http://127.0.0.1:8891', 'http://127.0.0.1:8892'];
 const SHEET_NAME = 'Responses';
@@ -74,7 +72,15 @@ function setup() {
 }
 function configuration(p){
   if(p.version===SurveyRules.version)return {rules:SurveyRules,name:SHEET_NAME,header:HEADER};
-  if(p.version===SurveyRulesV3.version)return {rules:SurveyRulesV3,name:'Responses v3',header:['received_at','response_id','survey_version','version_A','version_B','version_C','product_order','product_assignments',...Object.keys(SurveyRulesV3.fields),'response_json','additional_details','details_json','artwork_revision']};
+  if(p.version===SurveyRulesV3.version) {
+    const header=['received_at','response_id','survey_version','version_A','version_B','version_C','product_order','product_assignments'];
+    for(const k of Object.keys(SurveyRulesV3.fields)){
+      header.push(k);
+      if(SurveyRulesV3.detailQuestions.includes(k))header.push(k+'_details');
+    }
+    header.push('response_json','artwork_revision');
+    return {rules:SurveyRulesV3,name:'Responses v4',header};
+  }
   throw Error('Unsupported survey version.');
 }
 function ensureHeader(sheet,header=HEADER){
@@ -109,8 +115,24 @@ function saveResponse(p){
       const match=sheet.getRange(2,2,sheet.getLastRow()-1,1).createTextFinder(p.id).matchEntireCell(true).findNext();
       if(match){if(sheet.getRange(match.getRow(),config.header.indexOf('response_json')+1).getValue()!==serialized)throw Error('Response already saved with different answers.');return;}
     }
-    const row=[new Date().toISOString(),p.id,p.version,...p.styleOrder,p.productOrder.join(' → '),...(p.assignments?[JSON.stringify(p.assignments)]:[]),...Object.keys(config.rules.fields).map(k=>cell(p.answers[k])),serialized];
-    if(config.rules===SurveyRulesV3)row.push(cell(readableDetails(p.details||{},config.rules)),JSON.stringify(orderedDetails(p.details||{},config.rules)),p.artworkRevision||'');
+    const row=[new Date().toISOString(),p.id,p.version,...p.styleOrder,p.productOrder.join(' → '),...(p.assignments?[JSON.stringify(p.assignments)]:[])];
+    if(config.rules===SurveyRulesV3){
+      for(const k of Object.keys(config.rules.fields)){
+        row.push(cell(p.answers[k]));
+        if(config.rules.detailQuestions.includes(k)){
+          const d=p.details?.[k];
+          let detailStr='';
+          if(d&&(d.selected.length||d.custom)){
+            const reasons=d.selected.map(v=>config.rules.detailLabels[v]).join('; ');
+            detailStr=(reasons?'Reasons: '+reasons:'')+(reasons&&d.custom?'\nAdditional: ':(d.custom?'Additional: ':''))+(d.custom||'');
+          }
+          row.push(cell(detailStr));
+        }
+      }
+      row.push(serialized,p.artworkRevision||'');
+    }else{
+      row.push(...Object.keys(config.rules.fields).map(k=>cell(p.answers[k])),serialized);
+    }
     sheet.appendRow(row);SpreadsheetApp.flush();
   }finally{lock.releaseLock();}
 }

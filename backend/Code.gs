@@ -22,7 +22,6 @@ var SurveyRules = (function () {
   return {version,styles,products,choices,fields,validAnswer,validate,permutation,shuffle};
 })();
 var SurveyRulesV3 = (function(){
-var SurveyRulesV3 = (function(){
  'use strict';
  const version='ux-illustrations-2026-09-v3.1';
  const styles=['with_plinth','without_plinth','flat_2d'];
@@ -57,8 +56,6 @@ var SurveyRulesV3 = (function(){
  }
  function shuffle(a,random){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
  return {version,styles,products,choices,fields,detailQuestions,detailLabels,detailOptions,validateDetails,validAnswer,validate,permutation,shuffle};
-})();
-
 })();
 /* Allowed survey origins. The loopback origin supports local integration checks. */
 const SURVEY_ORIGINS = ['https://paneerpakoda.github.io', 'http://127.0.0.1:8891', 'http://127.0.0.1:8892'];
@@ -143,17 +140,17 @@ function saveResponse(p){
 function doPost(e){
   const input=e&&e.parameter||{};
   const nonce=typeof input.nonce==='string'&&/^[0-9a-f-]{36}$/i.test(input.nonce)?input.nonce:'';
-  let id='',ok=false;
+  let id='',ok=false,err='';
   try{
     if(!SURVEY_ORIGINS.includes(input.origin)||!nonce)throw Error('Invalid origin.');
     if(typeof input.payload!=='string'||input.payload.length>32000)throw Error('Invalid response size.');
     const p=JSON.parse(input.payload);id=typeof p.id==='string'?p.id:'';
     saveResponse(p);ok=true;
-  }catch(error){ return HtmlService.createHtmlOutput('<!doctype html><html><body><p>' + (error.message || String(error)) + '</p><script>const m=JSON.stringify({type:\'ux-survey-saved\',nonce:\''+nonce+'\',id:\''+id+'\',ok:false,error:String(' + JSON.stringify(error.message || String(error)) + ')});const o=JSON.stringify(SURVEY_ORIGINS.includes(input.origin)?input.origin:SURVEY_ORIGINS[0]);for(const w of [window.parent,window.parent.parent,window.top]){try{w.postMessage(m,o);}catch(e){}}</script></body></html>').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL); }
-  const message=JSON.stringify({type:'ux-survey-saved',nonce,id,ok}).replace(/</g,'\\u003c');
+  }catch(error){err=error&&error.message||String(error);}
+  const message=JSON.stringify({type:'ux-survey-saved',nonce,id,ok,error:err}).replace(/</g,'\\u003c');
   const target=JSON.stringify(SURVEY_ORIGINS.includes(input.origin)?input.origin:SURVEY_ORIGINS[0]).replace(/</g,'\\u003c');
   // Apps Script nests HTML in a sandbox iframe. Send to the host page with an exact target origin.
-  const html='<!doctype html><html><body><p>'+ (ok?'Feedback saved.':'Feedback could not be saved. Please return to the survey and retry.') +'</p><script>const m='+message+';const o='+target+';for(const w of [window.parent,window.parent.parent,window.top]){try{w.postMessage(m,o);}catch(e){}}</script></body></html>';
+  const html='<!doctype html><html><body><p>'+ (ok?'Feedback saved.':('Feedback could not be saved.' + (err ? ' ' + err : '') + ' Please return to the survey and retry.')) +'</p><script>const m='+message+';const o='+target+';for(const w of [window.parent,window.parent.parent,window.top]){try{w.postMessage(m,o);}catch(e){}}</script></body></html>';
   return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 function doGet(){return HtmlService.createHtmlOutput('Illustration survey collector v3-details. Supports v2 and v3 with optional question details. Open the survey link to participate.');}

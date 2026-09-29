@@ -9,7 +9,7 @@ try{const saved=JSON.parse(sessionStorage.getItem(storageKey));if(saved?.version
 const styles=state.styleOrder;
 const names={with_plinth:'3D with plinth',without_plinth:'3D without plinth',flat_2d:'Existing 2D'};
 const products=state.productOrder.map(id=>window.PRODUCTS.find(p=>p.id===id));
-const steps=[{kind:'name'}].concat(products.map(product=>({kind:'preference',product})).concat(products.filter(p=>['home','two_wheeler'].includes(p.id)).map(product=>({kind:'clarity',product})),[{kind:'screen'},{kind:'consistency'},{kind:'recommendation'}]));
+const steps=[{kind:'name'}].concat(products.map(product=>({kind:'preference',product})).concat(products.filter(p=>['home','two_wheeler'].includes(p.id)).map(product=>({kind:'clarity',product})),[{kind:'screen'},{kind:'cc_icons'},{kind:'consistency'},{kind:'recommendation'}]));
 const answers=state.answers,comments=answers;
 let step=state.step,busy=false;
 const endpoint=window.SURVEY_CONFIG?.endpoint||'';
@@ -29,8 +29,32 @@ function artChoices(q){
   return `<button type="button" class="art-option" data-choice="${style}" aria-pressed="${answers[key()]===style}" aria-label="Choose ${family?names[style]:'version '+'ABC'[i]}" ${available?'':'disabled'}>${content}<span class="option-label">${family?names[style]:'ABC'[i]}</span></button>`;
  }).join('')}</div>`;
 }
+function ccIconChoices() {
+ const v = answers[key()];
+ return `<div class="art-options cc-options" role="group" aria-label="Credit Card Icon Choices">
+  <button type="button" class="art-option" style="min-height:auto;padding:12px" data-choice="3d_icons" aria-pressed="${v==='3d_icons'}">
+   <img src="assets/cc-3d-landing.png" style="width:100%;height:auto;border-radius:12px;border:1px solid #e1e3e6">
+   <div style="display:flex;gap:12px;margin-top:16px">
+    <img src="assets/cc-3d-lounge.png" width="48" height="48" style="object-fit:contain">
+    <img src="assets/cc-3d-movie.png" width="48" height="48" style="object-fit:contain">
+    <img src="assets/cc-3d-rewards.png" width="48" height="48" style="object-fit:contain">
+    <img src="assets/cc-3d-tickets.png" width="48" height="48" style="object-fit:contain">
+   </div>
+   <span class="option-label">New 3D Icons</span>
+  </button>
+  <button type="button" class="art-option" style="min-height:auto;padding:12px" data-choice="2d_icons" aria-pressed="${v==='2d_icons'}">
+   <img src="assets/cc-2d-landing.png" style="width:100%;height:auto;border-radius:12px;border:1px solid #e1e3e6">
+   <div style="display:flex;gap:12px;margin-top:16px">
+    <img src="assets/cc-2d-lounge.png" width="48" height="48" style="object-fit:contain">
+    <img src="assets/cc-2d-quick.png" width="48" height="48" style="object-fit:contain">
+    <img src="assets/cc-2d-rewards.png" width="48" height="48" style="object-fit:contain">
+   </div>
+   <span class="option-label">Existing 2D Icons</span>
+  </button>
+ </div>`;
+}
 function options(q){
- const choices=q.kind==='clarity'?[['equal','Equally clear'],['none','None are clear']]:q.kind==='consistency'?[['equal','Equally consistent'],['none','None are consistent']]:[...(q.kind==='recommendation'?[['depends','Depends on the product']]:[]),['no_preference','No preference'],['none','None of these']];
+ const choices=q.kind==='clarity'?[['equal','Equally clear'],['none','None are clear']]:q.kind==='consistency'?[['equal','Equally consistent'],['none','None are consistent']]:q.kind==='cc_icons'?[['no_preference','No preference']]:[...(q.kind==='recommendation'?[['depends','Depends on the product']]:[]),['no_preference','No preference'],['none','None of these']];
  return `<div class="other-options" role="group" aria-label="Other choices">${choices.map(([v,label])=>`<button type="button" class="other-option" data-choice="${v}" aria-pressed="${answers[key()]===v}">${label}</button>`).join('')}</div>`;
 }
 function questionDetails(){
@@ -40,13 +64,13 @@ function questionDetails(){
 function render(focus=false){
  $('#form-error').hidden=true;if(state.submitted){showSuccess();return;}
  const q=steps[step];const final=step===steps.length-1;
- const title=q.kind==='name'?'What’s your name?':q.kind==='preference'?`Which illustration would you choose for ${q.product.name}?`:q.kind==='clarity'?'At this size, which illustration is easiest to make out?':q.kind==='screen'?'Which illustrations work best on this screen?':q.kind==='consistency'?'Which set feels most consistent?':'Which direction would you recommend for Offers?';
- const instruction=q.kind==='name'?'Your name will be saved with your feedback for the UX Squad review.':q.kind==='preference'?'Think about its use on the Offers page. Choose an option, then tap Next.':q.kind==='clarity'?`${q.product.name} · Compare the three illustrations at the same size.`:q.kind==='screen'?'Compare the product illustrations in the Offers screen. Choose a screen, then tap Next.':q.kind==='consistency'?'Consider how the illustrations work together across all six products.':'Consider all six products. It’s okay to prefer different styles for different products.';
- const type=q.kind==='name'?'Before you begin':q.kind==='preference'?'Product preference':q.kind==='clarity'?'Clarity at a smaller size':q.kind==='screen'?'In the Offers screen':q.kind==='consistency'?'Across the family':'Your recommendation';
+ const title=q.kind==='name'?'What’s your name?':q.kind==='preference'?`Which illustration would you choose for ${q.product.name}?`:q.kind==='clarity'?'At this size, which illustration is easiest to make out?':q.kind==='screen'?'Which illustrations work best on this screen?':q.kind==='cc_icons'?'Credit card landing pages':q.kind==='consistency'?'Which set feels most consistent?':'Which direction would you recommend for Offers?';
+ const instruction=q.kind==='name'?'Your name will be saved with your feedback for the UX Squad review.':q.kind==='preference'?'Think about its use on the Offers page. Choose an option, then tap Next.':q.kind==='clarity'?`${q.product.name} · Compare the three illustrations at the same size.`:q.kind==='screen'?'Compare the product illustrations in the Offers screen. Choose a screen, then tap Next.':q.kind==='cc_icons'?'Compare the new flatter 3D icons to the existing 2D line-art icons.':q.kind==='consistency'?'Consider how the illustrations work together across all six products.':'Consider all six products. It’s okay to prefer different styles for different products.';
+ const type=q.kind==='name'?'Before you begin':q.kind==='preference'?'Product preference':q.kind==='clarity'?'Clarity at a smaller size':q.kind==='screen'?'In the Offers screen':q.kind==='cc_icons'?'Iconography style':q.kind==='consistency'?'Across the family':'Your recommendation';
  const note=q.kind==='clarity'?'Shown in a 64 px slot, matching the product cards in the supplied screen.':q.kind==='screen'?'Illustrative mockups only. Please compare the illustrations; minor UI inaccuracies shown here will not appear in the final screen.':'';
  const comment=q.kind==='name'?'':questionDetails();
  const nextTop=document.createElement('button');nextTop.id='next-top';nextTop.type='submit';nextTop.className='send';
- $('#screen').innerHTML=`<p class="question-kind">${type}</p><div class="question-heading"><h1 tabindex="-1">${title}</h1></div><p class="instruction">${instruction}</p>${q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="off" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
+ $('#screen').innerHTML=`<p class="question-kind">${type}</p><div class="question-heading"><h1 tabindex="-1">${title}</h1></div><p class="instruction">${instruction}</p>${q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="off" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():q.kind==='cc_icons'?ccIconChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
  document.querySelector('.question-heading').append(nextTop);
  document.querySelector('main').classList.toggle('screen-comparison',q.kind==='screen');
  screenObserver.disconnect();document.querySelectorAll('.screen-viewport').forEach(el=>screenObserver.observe(el));

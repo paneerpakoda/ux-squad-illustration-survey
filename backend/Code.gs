@@ -28,8 +28,9 @@ var SurveyRulesV3 = (function(){
  const products=['home','personal','car','education','rupay','two_wheeler'];
  const choices=[...styles,'no_preference','none'];
  const fields={respondent_name:100,...Object.fromEntries(products.map(p=>[p+'_preference',choices]))};
- Object.assign(fields,{home_clarity:[...styles,'equal','none'],two_wheeler_clarity:[...styles,'equal','none'],screen:choices,consistency:[...styles,'equal','none'],recommendation:[...choices,'depends'],home_reason:1500,two_wheeler_reason:1500,reason:1500,changes:1500});
- const detailQuestions=[...products.map(p=>p+'_preference'),'home_clarity','two_wheeler_clarity','screen','consistency','recommendation'];
+ const ccIconChoices=['3d_icons','2d_icons','no_preference'];
+ Object.assign(fields,{home_clarity:[...styles,'equal','none'],two_wheeler_clarity:[...styles,'equal','none'],screen:choices,cc_icons:ccIconChoices,consistency:[...styles,'equal','none'],recommendation:[...choices,'depends'],home_reason:1500,two_wheeler_reason:1500,reason:1500,changes:1500});
+ const detailQuestions=[...products.map(p=>p+'_preference'),'home_clarity','two_wheeler_clarity','screen','cc_icons','consistency','recommendation'];
  const detailLabels={recognition:'Product recognition',clarity:'Visual clarity',simplicity:'Simplicity / amount of detail',colour:'Colours and contrast',perspective:'Composition and viewing angle',brand:'Fit with the bank’s visual style',personal:'Personal preference',small_size:'Legibility at this size',silhouette:'Shape and silhouette',ui_fit:'Fit with the surrounding UI',prominence:'Visual prominence',consistency:'Consistency across products',flexibility:'Suitability across different products'};
  const detailOptions=Object.fromEntries(detailQuestions.map(k=>[k,k.endsWith('_clarity')?['small_size','silhouette','colour','simplicity','recognition']:k==='screen'?['ui_fit','prominence','recognition','consistency','colour','brand']:k==='consistency'?['consistency','perspective','colour','simplicity','brand']:k==='recommendation'?['recognition','clarity','brand','consistency','flexibility','personal']:['recognition','clarity','simplicity','colour','perspective','brand','personal']]));
  function validateDetails(details){

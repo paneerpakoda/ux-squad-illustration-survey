@@ -66,11 +66,11 @@ $('#survey').addEventListener('click',event=>{
  const details=$('.question-details');
  if(details){
   details.open=true;
-  if(window.innerWidth<=600)details.scrollIntoView({behavior:'smooth',block:'center'});
+  details.scrollIntoView({behavior:'smooth',block:'center'});
  }
  updateNextBtns(step===steps.length-1&&!connected);$('#form-error').hidden=true;persist();
- if(window.innerWidth<=600&&!$('#next').disabled){
-  const nextBtn=$('#next-top');
+ if(!$('#next').disabled){
+  const nextBtn=window.innerWidth<=600?$('#next-top'):$('#next');
   nextBtn.focus({preventScroll:true});
   nextBtn.style.outline='3px solid #4276bd';nextBtn.style.outlineOffset='4px';
   setTimeout(()=>{

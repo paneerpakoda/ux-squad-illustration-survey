@@ -34,20 +34,20 @@ function ccIconChoices() {
  return `<div class="art-options cc-options" role="group" aria-label="Credit Card Icon Choices">
   <button type="button" class="art-option" style="min-height:auto;padding:12px" data-choice="3d_icons" aria-pressed="${v==='3d_icons'}">
    <img src="assets/cc-3d-landing.png" style="width:100%;height:auto;border-radius:12px;border:1px solid #e1e3e6">
-   <div style="display:flex;gap:12px;margin-top:16px">
-    <img src="assets/cc-3d-lounge.png" width="48" height="48" style="object-fit:contain">
-    <img src="assets/cc-3d-movie.png" width="48" height="48" style="object-fit:contain">
-    <img src="assets/cc-3d-rewards.png" width="48" height="48" style="object-fit:contain">
-    <img src="assets/cc-3d-tickets.png" width="48" height="48" style="object-fit:contain">
+   <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;justify-content:center">
+    <img src="assets/cc-3d-lounge.png" style="width:48px;height:48px;object-fit:contain">
+    <img src="assets/cc-3d-movie.png" style="width:48px;height:48px;object-fit:contain">
+    <img src="assets/cc-3d-rewards.png" style="width:48px;height:48px;object-fit:contain">
+    <img src="assets/cc-3d-tickets.png" style="width:48px;height:48px;object-fit:contain">
    </div>
    <span class="option-label">New 3D Icons</span>
   </button>
   <button type="button" class="art-option" style="min-height:auto;padding:12px" data-choice="2d_icons" aria-pressed="${v==='2d_icons'}">
    <img src="assets/cc-2d-landing.png" style="width:100%;height:auto;border-radius:12px;border:1px solid #e1e3e6">
-   <div style="display:flex;gap:12px;margin-top:16px">
-    <img src="assets/cc-2d-lounge.png" width="48" height="48" style="object-fit:contain">
-    <img src="assets/cc-2d-quick.png" width="48" height="48" style="object-fit:contain">
-    <img src="assets/cc-2d-rewards.png" width="48" height="48" style="object-fit:contain">
+   <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;justify-content:center">
+    <img src="assets/cc-2d-lounge.png" style="width:48px;height:48px;object-fit:contain">
+    <img src="assets/cc-2d-quick.png" style="width:48px;height:48px;object-fit:contain">
+    <img src="assets/cc-2d-rewards.png" style="width:48px;height:48px;object-fit:contain">
    </div>
    <span class="option-label">Existing 2D Icons</span>
   </button>

@@ -16,6 +16,7 @@ const endpoint=window.SURVEY_CONFIG?.endpoint||'';
 const connected=/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(endpoint);
 function persist(){try{sessionStorage.setItem(storageKey,JSON.stringify({...state,step}));}catch{}}
 function showError(message){$('#form-error').textContent=message;$('#form-error').hidden=false;}
+function updateNextBtns(d,t){['#next','#next-top'].forEach(s=>{const el=$(s);if(el){if(d!==undefined)el.disabled=d;if(t!==undefined)el.textContent=t;}});}
 const screenObserver=new ResizeObserver(entries=>entries.forEach(({target,contentRect})=>{target.firstElementChild.style.transform=`scale(${contentRect.width/360})`;}));
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const key=()=>steps[step].kind==='name'?'respondent_name':steps[step].product?steps[step].product.id+'_'+steps[step].kind:steps[step].kind;
@@ -44,15 +45,15 @@ function render(focus=false){
  const type=q.kind==='name'?'Before you begin':q.kind==='preference'?'Product preference':q.kind==='clarity'?'Clarity at a smaller size':q.kind==='screen'?'In the Offers screen':q.kind==='consistency'?'Across the family':'Your recommendation';
  const note=q.kind==='clarity'?'Shown in a 64 px slot, matching the product cards in the supplied screen.':q.kind==='screen'?'Illustrative mockups only. Please compare the illustrations; minor UI inaccuracies shown here will not appear in the final screen.':'';
  const comment=q.kind==='name'?'':questionDetails();
- const nextButton=$('#next');nextButton.remove();
+ const nextTop=document.createElement('button');nextTop.id='next-top';nextTop.type='submit';nextTop.className='send';
  $('#screen').innerHTML=`<p class="question-kind">${type}</p><div class="question-heading"><h1 tabindex="-1">${title}</h1></div><p class="instruction">${instruction}</p>${q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="off" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
- document.querySelector('.question-heading').append(nextButton);
+ document.querySelector('.question-heading').append(nextTop);
  document.querySelector('main').classList.toggle('screen-comparison',q.kind==='screen');
  screenObserver.disconnect();document.querySelectorAll('.screen-viewport').forEach(el=>screenObserver.observe(el));
  $('#step-label').textContent=`${step+1} / ${steps.length}`;
  $('#progress-fill').style.width=`${(step+1)/steps.length*100}%`;
  $('#back').hidden=step===0;
- $('#next').disabled=!R.validAnswer(key(),answers[key()])||(final&&!connected);$('#next').textContent=final?(state.pendingResponse?'Try sending again':'Send feedback'):'Next →';
+ updateNextBtns(!R.validAnswer(key(),answers[key()])||(final&&!connected),final?(state.pendingResponse?'Try sending again':'Send feedback'):'Next →');
  $('#back').disabled=!!state.pendingResponse;
  if(state.pendingResponse)document.querySelectorAll('[data-choice],textarea,input').forEach(el=>el.disabled=true);
  if(focus){$('#screen h1').focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});}
@@ -62,8 +63,21 @@ $('#survey').addEventListener('click',event=>{
  if([...document.querySelectorAll('.art-options img')].some(img=>!img.complete||!img.naturalWidth)){showError('The illustrations are still loading. Please try again in a moment.');return;}
  answers[key()]=button.dataset.choice;
  document.querySelectorAll('[data-choice]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.choice===answers[key()])));
- const details=$('.question-details');if(details)details.open=true;
- $('#next').disabled=step===steps.length-1&&!connected;$('#form-error').hidden=true;persist();
+ const details=$('.question-details');
+ if(details){
+  details.open=true;
+  if(window.innerWidth<=600)details.scrollIntoView({behavior:'smooth',block:'center'});
+ }
+ updateNextBtns(step===steps.length-1&&!connected);$('#form-error').hidden=true;persist();
+ if(window.innerWidth<=600&&!$('#next').disabled){
+  const nextBtn=$('#next-top');
+  nextBtn.focus({preventScroll:true});
+  nextBtn.style.outline='3px solid #4276bd';nextBtn.style.outlineOffset='4px';
+  setTimeout(()=>{
+   nextBtn.style.outline='';nextBtn.style.outlineOffset='';
+   if(document.activeElement===nextBtn)nextBtn.blur();
+  },1000);
+ }
 });
 $('#survey').addEventListener('input',event=>{
  if(busy||state.pendingResponse)return;
@@ -74,7 +88,7 @@ $('#survey').addEventListener('input',event=>{
   else d.custom=el.value;
   persist();return;
  }
- if(['TEXTAREA','INPUT'].includes(event.target.tagName)&&!busy&&!state.pendingResponse&&Object.prototype.hasOwnProperty.call(R.fields,event.target.name)){comments[event.target.name]=event.target.value;$('#next').disabled=!R.validAnswer(key(),answers[key()])||(step===steps.length-1&&!connected);persist();}});
+ if(['TEXTAREA','INPUT'].includes(event.target.tagName)&&!busy&&!state.pendingResponse&&Object.prototype.hasOwnProperty.call(R.fields,event.target.name)){comments[event.target.name]=event.target.value;updateNextBtns(!R.validAnswer(key(),answers[key()])||(step===steps.length-1&&!connected));persist();}});
 $('#back').addEventListener('click',()=>{if(step>0&&!busy&&!state.pendingResponse){step--;persist();render(true);}});
 
 function payload(){return R.validate({version:state.version,id:state.id,styleOrder:styles,productOrder:state.productOrder,assignments:state.assignments,answers,...(state.details?{details:state.details}:{}),...(state.artworkRevision?{artworkRevision:state.artworkRevision}:{})});}
@@ -92,10 +106,10 @@ $('#survey').addEventListener('submit',async event=>{
  if(step<steps.length-1){if(state.pendingResponse)return;step++;persist();render(true);return;}
  if(!connected){showError('The response connection is unavailable. Please try again later.');return;}
  let data;try{data=state.pendingResponse||payload();state.pendingResponse=data;persist();}catch{showError('Please choose an option for each question.');return;}
- busy=true;$('#next').disabled=true;$('#next').textContent='Sending…';$('#back').disabled=true;$('#form-error').hidden=true;
+ busy=true;updateNextBtns(true,'Sending…');$('#back').disabled=true;$('#form-error').hidden=true;
  document.querySelectorAll('[data-choice],textarea,input').forEach(el=>el.disabled=true);
  try{await sendResponse(data);state.submitted=true;state.answers={};state.details={};delete state.pendingResponse;persist();showSuccess();}
- catch{showError('Could not confirm your response. Your answers are kept here. Please retry; it won’t send a duplicate.');$('#next').disabled=false;$('#next').textContent='Try sending again';}
+ catch{showError('Could not confirm your response. Your answers are kept here. Please retry; it won’t send a duplicate.');updateNextBtns(false,'Try sending again');}
  finally{busy=false;}
 });
 function sendResponse(data){return new Promise((resolve,reject)=>{

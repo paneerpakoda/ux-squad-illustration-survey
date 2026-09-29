@@ -87,7 +87,7 @@ function doPost(e){
     if(typeof input.payload!=='string'||input.payload.length>32000)throw Error('Invalid response size.');
     const p=JSON.parse(input.payload);id=typeof p.id==='string'?p.id:'';
     saveResponse(p);ok=true;
-  }catch(error){/* No response contents or personal comments in logs. */}
+  }catch(error){ return HtmlService.createHtmlOutput('<!doctype html><html><body><p>' + (error.message || String(error)) + '</p><script>const m=JSON.stringify({type:\'ux-survey-saved\',nonce:\''+nonce+'\',id:\''+id+'\',ok:false,error:String(' + JSON.stringify(error.message || String(error)) + ')});const o=JSON.stringify(SURVEY_ORIGINS.includes(input.origin)?input.origin:SURVEY_ORIGINS[0]);for(const w of [window.parent,window.parent.parent,window.top]){try{w.postMessage(m,o);}catch(e){}}</script></body></html>').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL); }
   const message=JSON.stringify({type:'ux-survey-saved',nonce,id,ok}).replace(/</g,'\\u003c');
   const target=JSON.stringify(SURVEY_ORIGINS.includes(input.origin)?input.origin:SURVEY_ORIGINS[0]).replace(/</g,'\\u003c');
   // Apps Script nests HTML in a sandbox iframe. Send to the host page with an exact target origin.

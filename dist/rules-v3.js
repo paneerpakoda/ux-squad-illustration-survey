@@ -1,6 +1,6 @@
 var SurveyRulesV3 = (function(){
  'use strict';
- const version='ux-illustrations-2026-09-v3';
+ const version='ux-illustrations-2026-09-v3.1';
  const styles=['with_plinth','without_plinth','flat_2d'];
  const products=['home','personal','car','education','rupay','two_wheeler'];
  const choices=[...styles,'no_preference','none'];

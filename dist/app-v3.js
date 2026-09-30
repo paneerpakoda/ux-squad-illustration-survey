@@ -33,24 +33,28 @@ function artChoices(q){
 function ccIconChoices() {
  const v = answers[key()];
  return `<div class="art-options cc-options" role="group" aria-label="Credit Card Icon Choices">
-  <button type="button" class="art-option" style="min-height:auto;padding:12px" data-choice="3d_icons" aria-pressed="${v==='3d_icons'}">
-   <img src="assets/cc-3d-landing.png" style="width:100%;height:auto;border-radius:12px;border:1px solid #e1e3e6">
-   <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;justify-content:center">
-    <img src="assets/cc-3d-lounge.png" style="width:48px;height:48px;object-fit:contain">
-    <img src="assets/cc-3d-movie.png" style="width:48px;height:48px;object-fit:contain">
-    <img src="assets/cc-3d-rewards.png" style="width:48px;height:48px;object-fit:contain">
-    <img src="assets/cc-3d-tickets.png" style="width:48px;height:48px;object-fit:contain">
+  <button type="button" class="art-option" data-choice="3d_icons" aria-pressed="${v==='3d_icons'}">
+   <span class="option-label" style="font-size:15px;font-weight:700">New 3D Icons</span>
+   <div class="cc-screen-container">
+    <img src="assets/cc-3d-landing.png" alt="New 3D landing page screen">
    </div>
-   <span class="option-label">New 3D Icons</span>
+   <div class="cc-icons-showcase">
+    <div class="cc-icon-card"><img src="assets/cc-3d-lounge.png" class="cc-icon-img" alt="Lounge"><span class="cc-icon-label">Lounge</span></div>
+    <div class="cc-icon-card"><img src="assets/cc-3d-movie.png" class="cc-icon-img" alt="Movies"><span class="cc-icon-label">Movies</span></div>
+    <div class="cc-icon-card"><img src="assets/cc-3d-rewards.png" class="cc-icon-img" alt="Rewards"><span class="cc-icon-label">Rewards</span></div>
+    <div class="cc-icon-card"><img src="assets/cc-3d-tickets.png" class="cc-icon-img" alt="Perks"><span class="cc-icon-label">Perks</span></div>
+   </div>
   </button>
-  <button type="button" class="art-option" style="min-height:auto;padding:12px" data-choice="2d_icons" aria-pressed="${v==='2d_icons'}">
-   <img src="assets/cc-2d-landing.png" style="width:100%;height:auto;border-radius:12px;border:1px solid #e1e3e6">
-   <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;justify-content:center">
-    <img src="assets/cc-2d-lounge.png" style="width:48px;height:48px;object-fit:contain">
-    <img src="assets/cc-2d-quick.png" style="width:48px;height:48px;object-fit:contain">
-    <img src="assets/cc-2d-rewards.png" style="width:48px;height:48px;object-fit:contain">
+  <button type="button" class="art-option" data-choice="2d_icons" aria-pressed="${v==='2d_icons'}">
+   <span class="option-label" style="font-size:15px;font-weight:700">Existing 2D Icons</span>
+   <div class="cc-screen-container">
+    <img src="assets/cc-2d-landing.png" alt="Existing 2D landing page screen">
    </div>
-   <span class="option-label">Existing 2D Icons</span>
+   <div class="cc-icons-showcase">
+    <div class="cc-icon-card"><img src="assets/cc-2d-lounge-glyph.png" class="cc-icon-img" alt="Lounge"><span class="cc-icon-label">Lounge</span></div>
+    <div class="cc-icon-card"><img src="assets/cc-2d-quick-glyph.png" class="cc-icon-img" alt="Issuance"><span class="cc-icon-label">Issuance</span></div>
+    <div class="cc-icon-card"><img src="assets/cc-2d-rewards-glyph.png" class="cc-icon-img" alt="Rewards"><span class="cc-icon-label">Rewards</span></div>
+   </div>
   </button>
  </div>`;
 }

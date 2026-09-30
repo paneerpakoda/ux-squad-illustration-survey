@@ -5,12 +5,13 @@ const random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 const storageKey=R.version;
 const artworkRevision='sw-reasons-2026-09-24';
 let state={version:R.version,id:crypto.randomUUID(),styleOrder:R.shuffle(R.styles,random),productOrder:R.shuffle(R.products,random),assignments:Object.fromEntries(R.products.map(id=>[id,R.shuffle(R.styles,random)])),artworkRevision,details:{},answers:{respondent_name:'',home_reason:'',two_wheeler_reason:'',reason:'',changes:''},step:0};
-try{const saved=JSON.parse(sessionStorage.getItem(storageKey));if(saved?.version===R.version){if(saved.pendingResponse){R.validate(saved.pendingResponse);state={...saved.pendingResponse,pendingResponse:saved.pendingResponse,step:11};}else if(saved.submitted===true)state.submitted=true;}}catch{}
+try{const saved=JSON.parse(sessionStorage.getItem(storageKey));if(saved?.version===R.version){if(saved.pendingResponse){R.validate(saved.pendingResponse);state={...saved.pendingResponse,pendingResponse:saved.pendingResponse,step:12};}else if(saved.submitted===true)state.submitted=true;}}catch{}
 const styles=state.styleOrder;
 const names={with_plinth:'3D with plinth',without_plinth:'3D without plinth',flat_2d:'Existing 2D'};
 const products=state.productOrder.map(id=>window.PRODUCTS.find(p=>p.id===id));
 const steps=[{kind:'name'}].concat(products.map(product=>({kind:'preference',product})).concat(products.filter(p=>['home','two_wheeler'].includes(p.id)).map(product=>({kind:'clarity',product})),[{kind:'screen'},{kind:'cc_icons'},{kind:'consistency'},{kind:'recommendation'}]));
 const answers=state.answers,comments=answers;
+if(state.pendingResponse)state.step=steps.length-1;
 let step=state.step,busy=false;
 const endpoint=window.SURVEY_CONFIG?.endpoint||'';
 const connected=/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(endpoint);

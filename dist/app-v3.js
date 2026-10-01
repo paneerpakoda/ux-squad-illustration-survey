@@ -69,20 +69,38 @@ function questionDetails(){
 function render(focus=false){
  $('#form-error').hidden=true;if(state.submitted){showSuccess();return;}
  const q=steps[step];const final=step===steps.length-1;
- const title=q.kind==='name'?'What’s your name?':q.kind==='preference'?`Which illustration would you choose for ${q.product.name}?`:q.kind==='clarity'?'At this size, which illustration is easiest to make out?':q.kind==='screen'?'Which illustrations work best on this screen?':q.kind==='cc_icons'?'Credit card landing pages':q.kind==='consistency'?'Which set feels most consistent?':'Which direction would you recommend for Offers?';
- const instruction=q.kind==='name'?'Your name will be saved with your feedback for the UX Squad review.':q.kind==='preference'?'Think about its use on the Offers page. Choose an option, then tap Next.':q.kind==='clarity'?`${q.product.name} · Compare the three illustrations at the same size.`:q.kind==='screen'?'Compare the product illustrations in the Offers screen. Choose a screen, then tap Next.':q.kind==='cc_icons'?'Compare the new flatter 3D icons to the existing 2D line-art icons.':q.kind==='consistency'?'Consider how the illustrations work together across all six products.':'Consider all six products. It’s okay to prefer different styles for different products.';
- const type=q.kind==='name'?'Before you begin':q.kind==='preference'?'Product preference':q.kind==='clarity'?'Clarity at a smaller size':q.kind==='screen'?'In the Offers screen':q.kind==='cc_icons'?'Iconography style':q.kind==='consistency'?'Across the family':'Your recommendation';
+ const title=q.kind==='name'?'Help shape our illustration direction':q.kind==='preference'?`Which illustration would you choose for ${q.product.name}?`:q.kind==='clarity'?'At this size, which illustration is easiest to make out?':q.kind==='screen'?'Which illustrations work best on this screen?':q.kind==='cc_icons'?'Credit card landing pages':q.kind==='consistency'?'Which set feels most consistent?':'Which direction would you recommend for Offers?';
+ const instruction=q.kind==='name'?'':q.kind==='preference'?'Think about its use on the Offers page. Choose an option, then tap Next.':q.kind==='clarity'?`${q.product.name} · Compare the three illustrations at the same size.`:q.kind==='screen'?'Compare the product illustrations in the Offers screen. Choose a screen, then tap Next.':q.kind==='cc_icons'?'Compare the new flatter 3D icons to the existing 2D line-art icons.':q.kind==='consistency'?'Consider how the illustrations work together across all six products.':'Consider all six products. It’s okay to prefer different styles for different products.';
+ const type=q.kind==='name'?'UX Squad Design Study':q.kind==='preference'?'Product preference':q.kind==='clarity'?'Clarity at a smaller size':q.kind==='screen'?'In the Offers screen':q.kind==='cc_icons'?'Iconography style':q.kind==='consistency'?'Across the family':'Your recommendation';
  const note=q.kind==='clarity'?'Shown in a 64 px slot, matching the product cards in the supplied screen.':q.kind==='screen'?'Illustrative mockups only. Please compare the illustrations; minor UI inaccuracies shown here will not appear in the final screen.':'';
  const comment=q.kind==='name'?'':questionDetails();
  const nextTop=document.createElement('button');nextTop.id='next-top';nextTop.type='submit';nextTop.className='send';
- $('#screen').innerHTML=`<p class="question-kind">${type}</p><div class="question-heading"><h1 tabindex="-1">${title}</h1></div><p class="instruction">${instruction}</p>${q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='name'?`<div class="name-field"><label for="respondent_name">Your name</label><input id="respondent_name" name="respondent_name" type="text" autocomplete="off" maxlength="100" required value="${escape(answers.respondent_name)}"></div>`:(q.kind==='screen'?screenChoices():q.kind==='cc_icons'?ccIconChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
+ const nameContent=`<div class="survey-intro-card">
+   <div class="intro-card-header">
+     <strong>Why we’re doing this</strong>
+     <span class="intro-badge">⏱ ~3 mins</span>
+   </div>
+   <p class="intro-card-desc">We are evaluating three visual directions for product illustrations and landing page iconography:</p>
+   <ul class="intro-card-list">
+     <li><strong>3D with plinth</strong> vs <strong>3D without plinth</strong> vs <strong>Existing 2D</strong></li>
+     <li>Visual clarity and recognition across 6 key banking products</li>
+     <li>Real screen context on the Offers page &amp; new Credit Card icons</li>
+   </ul>
+   <p class="intro-card-footer">Your input will help the UX Squad finalize the art direction for upcoming releases.</p>
+ </div>
+ <div class="name-field">
+   <label for="respondent_name">Your name</label>
+   <p class="name-field-help">Please enter your name to begin. Your feedback will be saved with your review.</p>
+   <input id="respondent_name" name="respondent_name" type="text" autocomplete="name" maxlength="100" placeholder="e.g. Rahul Sharma" required value="${escape(answers.respondent_name)}">
+ </div>`;
+ $('#screen').innerHTML=`<p class="question-kind">${type}</p><div class="question-heading"><h1 tabindex="-1">${title}</h1></div>${instruction?`<p class="instruction">${instruction}</p>`:''}${q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='name'?nameContent:(q.kind==='screen'?screenChoices():q.kind==='cc_icons'?ccIconChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
  document.querySelector('.question-heading').append(nextTop);
  document.querySelector('main').classList.toggle('screen-comparison',q.kind==='screen');
  screenObserver.disconnect();document.querySelectorAll('.screen-viewport').forEach(el=>screenObserver.observe(el));
  $('#step-label').textContent=`${step+1} / ${steps.length}`;
  $('#progress-fill').style.width=`${(step+1)/steps.length*100}%`;
  $('#back').hidden=step===0;
- updateNextBtns(!R.validAnswer(key(),answers[key()])||(final&&!connected),final?(state.pendingResponse?'Try sending again':'Send feedback'):'Next →');
+ updateNextBtns(!R.validAnswer(key(),answers[key()])||(final&&!connected),final?(state.pendingResponse?'Try sending again':'Send feedback'):(step===0?'Start survey →':'Next →'));
  $('#back').disabled=!!state.pendingResponse;
  if(state.pendingResponse)document.querySelectorAll('[data-choice],textarea,input').forEach(el=>el.disabled=true);
  if(focus){$('#screen h1').focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});}

@@ -23,11 +23,16 @@ var SurveyRules = (function () {
 })();
 var SurveyRulesV3 = (function(){
  'use strict';
- const version='ux-illustrations-2026-09-v3.1';
+ const version='ux-illustrations-2026-10-v3.2';
  const styles=['with_plinth','without_plinth','flat_2d'];
  const products=['home','personal','car','education','rupay','two_wheeler'];
  const choices=[...styles,'no_preference','none'];
- const fields={respondent_name:100,...Object.fromEntries(products.map(p=>[p+'_preference',choices]))};
+ const fields={
+  age_bracket: ['under_25', '25_34', '35_49', '50_plus'],
+  relationship: ['icici_bank_customer', 'bank_team', 'agency_team', 'other_bank'],
+  client_os: ['ios', 'android', 'desktop', 'other'],
+  ...Object.fromEntries(products.map(p=>[p+'_preference',choices]))
+ };
  const ccIconChoices=['3d_icons','2d_icons','no_preference'];
  Object.assign(fields,{home_clarity:[...styles,'equal','none'],two_wheeler_clarity:[...styles,'equal','none'],screen:choices,cc_icons:ccIconChoices,consistency:[...styles,'equal','none'],recommendation:[...choices,'depends'],home_reason:1500,two_wheeler_reason:1500,reason:1500,changes:1500});
  const detailQuestions=[...products.map(p=>p+'_preference'),'home_clarity','two_wheeler_clarity','screen','cc_icons','consistency','recommendation'];
@@ -40,7 +45,7 @@ var SurveyRulesV3 = (function(){
   }
   return details;
  }
- function validAnswer(k,v){const r=fields[k];if(k==='respondent_name')return typeof v==='string'&&v.trim().length>0&&v.length<=100;return Object.prototype.hasOwnProperty.call(fields,k)&&typeof v==='string'&&(typeof r==='number'?v.length<=r:r.includes(v));}
+ function validAnswer(k,v){const r=fields[k];return Object.prototype.hasOwnProperty.call(fields,k)&&typeof v==='string'&&(typeof r==='number'?v.length<=r:r.includes(v));}
  function permutation(a,b){return Array.isArray(a)&&a.length===b.length&&new Set(a).size===b.length&&a.every(v=>b.includes(v));}
  function validate(p){
   if(!p||typeof p!=='object'||Array.isArray(p)||p.version!==version)throw Error('Unsupported survey version.');
@@ -73,27 +78,23 @@ function setup() {
 }
 function configuration(p){
   if(p.version===SurveyRules.version)return {rules:SurveyRules,name:SHEET_NAME,header:HEADER};
-  if(p.version===SurveyRulesV3.version) {
+  if(p.version===SurveyRulesV3.version || p.version==='ux-illustrations-2026-09-v3.1') {
     const header=['received_at','response_id','survey_version','version_A','version_B','version_C','product_order','product_assignments'];
     for(const k of Object.keys(SurveyRulesV3.fields)){
       header.push(k);
-      if(SurveyRulesV3.detailQuestions.includes(k))header.push(k+'_details');
+      if(SurveyRulesV3.detailQuestions.includes(k)) header.push(k+'_details');
     }
     header.push('response_json','artwork_revision');
-    return {rules:SurveyRulesV3,name:'Responses v6',header};
+    return {rules:SurveyRulesV3,name:'Responses v6',header,fields:Object.keys(SurveyRulesV3.fields)};
   }
   throw Error('Unsupported survey version.');
 }
 function ensureHeader(sheet,header=HEADER){
   const columns=sheet.getMaxColumns();
   if(columns<header.length)sheet.insertColumnsAfter(columns,header.length-columns);
-  if(sheet.getLastRow()===0){sheet.appendRow(header);sheet.setFrozenRows(1);return;}
+  if(sheet.getLastRow()===0){sheet.appendRow(header);sheet.setFrozenRows(1);return header;}
   const existing=sheet.getRange(1,1,1,header.length).getValues()[0];
-  if(JSON.stringify(existing)===JSON.stringify(header))return;
-  const originalLength=header.indexOf('additional_details');
-  if(originalLength>0&&JSON.stringify(existing.slice(0,originalLength))===JSON.stringify(header.slice(0,originalLength))&&existing.slice(originalLength).every(v=>v==='')){
-    sheet.getRange(1,originalLength+1,1,header.length-originalLength).setValues([header.slice(originalLength)]);return;
-  }
+  if(JSON.stringify(existing)===JSON.stringify(header))return header;
   throw Error('Unexpected response sheet columns.');
 }
 function cell(value){const text=String(value);return /^[\s]*[=+\-@]/.test(text)?"'"+text:text;}
@@ -101,7 +102,8 @@ function canonical(p,rules){return JSON.stringify({version:p.version,id:p.id,sty
 function orderedDetails(details,rules){return Object.fromEntries(rules.detailQuestions.filter(k=>Object.prototype.hasOwnProperty.call(details,k)).map(k=>[k,{selected:rules.detailOptions[k].filter(v=>details[k].selected.includes(v)),custom:details[k].custom}]));}
 function readableDetails(details,rules){return Object.entries(orderedDetails(details,rules)).filter(([,d])=>d.selected.length||d.custom).map(([k,d])=>k+'\nReasons: '+(d.selected.map(v=>rules.detailLabels[v]).join('; ')||'—')+(d.custom?'\nAdditional: '+d.custom:'')).join('\n\n');}
 function saveResponse(p){
-  const config=configuration(p);config.rules.validate(p);
+  const config=configuration(p);
+  config.rules.validate(p);
   const lock=LockService.getScriptLock();
   if(!lock.tryLock(15000))throw Error('Please retry.');
   try{
@@ -110,16 +112,29 @@ function saveResponse(p){
     const book=SpreadsheetApp.openById(id);
     let sheet=book.getSheetByName(config.name);
     if(!sheet)sheet=book.insertSheet(config.name);
-    ensureHeader(sheet,config.header);
+    const actualHeader = ensureHeader(sheet,config.header);
     const serialized=canonical(p,config.rules);
     if(sheet.getLastRow()>1){
       const match=sheet.getRange(2,2,sheet.getLastRow()-1,1).createTextFinder(p.id).matchEntireCell(true).findNext();
-      if(match){if(sheet.getRange(match.getRow(),config.header.indexOf('response_json')+1).getValue()!==serialized)throw Error('Response already saved with different answers.');return;}
+      if(match){if(sheet.getRange(match.getRow(),actualHeader.indexOf('response_json')+1).getValue()!==serialized)throw Error('Response already saved with different answers.');return;}
     }
-    const row=[new Date().toISOString(),p.id,p.version,...p.styleOrder,p.productOrder.join(' → '),...(p.assignments?[JSON.stringify(p.assignments)]:[])];
-    if(config.rules===SurveyRulesV3){
-      for(const k of Object.keys(config.rules.fields)){
-        row.push(cell(p.answers[k]));
+    
+    // Map values to row based on actualHeader
+    const rowObj = {};
+    rowObj['received_at'] = new Date().toISOString();
+    rowObj['response_id'] = p.id;
+    rowObj['survey_version'] = p.version;
+    rowObj['version_A'] = p.styleOrder[0];
+    rowObj['version_B'] = p.styleOrder[1];
+    rowObj['version_C'] = p.styleOrder[2];
+    rowObj['product_order'] = p.productOrder.join(' → ');
+    if(p.assignments) rowObj['product_assignments'] = JSON.stringify(p.assignments);
+    
+    if(config.rules===SurveyRulesV3 || p.version === 'ux-illustrations-2026-09-v3.1'){
+      for(const k of config.fields){
+        if (p.answers && p.answers[k] !== undefined) {
+          rowObj[k] = cell(p.answers[k]);
+        }
         if(config.rules.detailQuestions.includes(k)){
           const d=p.details?.[k];
           let detailStr='';
@@ -127,13 +142,19 @@ function saveResponse(p){
             const reasons=d.selected.map(v=>config.rules.detailLabels[v]).join('; ');
             detailStr=(reasons?'Reasons: '+reasons:'')+(reasons&&d.custom?'\nAdditional: ':(d.custom?'Additional: ':''))+(d.custom||'');
           }
-          row.push(cell(detailStr));
+          rowObj[k+'_details'] = cell(detailStr);
         }
       }
-      row.push(serialized,p.artworkRevision||'');
+      rowObj['response_json'] = serialized;
+      rowObj['artwork_revision'] = p.artworkRevision||'';
     }else{
-      row.push(...Object.keys(config.rules.fields).map(k=>cell(p.answers[k])),serialized);
+      for(const k of Object.keys(config.rules.fields)) {
+        if (p.answers && p.answers[k] !== undefined) rowObj[k] = cell(p.answers[k]);
+      }
+      rowObj['response_json'] = serialized;
     }
+    
+    const row = actualHeader.map(h => rowObj[h] !== undefined ? rowObj[h] : '');
     sheet.appendRow(row);SpreadsheetApp.flush();
   }finally{lock.releaseLock();}
 }

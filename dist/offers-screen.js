@@ -10,5 +10,6 @@ function offersScreen(style){
  </span></span>`;
 }
 function screenChoices(){
- return `<div class="art-options screen-options" role="group" aria-label="Offers screen choices">${styles.map((style,i)=>`<button type="button" class="art-option screen-option" data-choice="${style}" aria-pressed="${answers[key()]===style}" aria-label="Choose Offers screen ${'ABC'[i]}, ${names[style]}"><span class="screen-choice-label">${'ABC'[i]} <span>${names[style]}</span></span><span class="phone-mockup"><span class="phone-camera" aria-hidden="true"></span>${offersScreen(style)}<span class="phone-home" aria-hidden="true"></span></span></button>`).join('')}</div>`;
+ const screenImages={with_plinth:'assets/offers-screen-with_plinth.png',without_plinth:'assets/offers-screen-without_plinth.png',flat_2d:'assets/offers-screen-flat_2d.png'};
+ return `<div class="art-options screen-options" role="group" aria-label="Offers screen choices">${styles.map((style,i)=>`<button type="button" class="art-option screen-option" data-choice="${style}" aria-pressed="${answers[key()]===style}" aria-label="Choose Offers screen ${'ABC'[i]}, ${names[style]}"><span class="screen-choice-label">${'ABC'[i]} <span>${names[style]}</span></span><img class="offers-screen-img" src="${screenImages[style]}" alt="Offers screen with ${names[style]} illustrations"></button>`).join('')}</div>`;
 }

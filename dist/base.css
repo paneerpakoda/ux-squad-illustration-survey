@@ -28,3 +28,98 @@ main{max-width:800px;margin:clamp(32px,9vh,100px) auto 32px;padding:0 24px}.topl
 .name-field{max-width:480px;margin:24px 0 36px}.name-field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}.name-field-help{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 12px}.name-field input{width:100%;font:inherit;font-size:17px;min-height:52px;padding:12px 16px;border:1px solid var(--line);border-radius:8px;color:inherit;background:white}.name-field input:focus-visible{outline:3px solid #4276bd;outline-offset:3px}
 
 .reason-options{border:0;padding:0;margin:14px 0 0;min-width:0}.reason-options legend{font-size:14px;font-weight:600;padding:0}.reason-help{font-size:12px;color:var(--muted);line-height:1.5;margin:8px 0 12px}.comment .reason-option{display:flex;align-items:center;gap:12px;min-height:44px;margin:0;padding:8px 0;font-size:14px;line-height:1.4;cursor:pointer}.reason-option input{width:18px;height:18px;flex-shrink:0;accent-color:#25272a;cursor:pointer}.reason-option input:focus-visible{outline:3px solid #4276bd;outline-offset:3px}.comment-field label span{font-weight:400;color:var(--muted)}
+
+/* Trust & Privacy Badge */
+.trust-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: #f0f7f4;
+  color: #2b593f;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  margin-top: 24px;
+  border: 1px solid #d4ebd9;
+}
+
+.trust-icon {
+  font-size: 14px;
+}
+
+/* Demographics Form */
+.demographics-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.pill-selector-group {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pill-selector-group legend {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.pill-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pill-btn {
+  background-color: #ffffff;
+  border: 1px solid #dcd5ce;
+  border-radius: 22px;
+  color: #4a4a4a;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 16px;
+  min-height: 44px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation; /* Mobile ergonomic */
+}
+
+.pill-btn:hover {
+  background-color: #fcfcfc;
+  border-color: #c0b8b0;
+}
+
+.pill-btn[aria-pressed="true"] {
+  background-color: #8b2537;
+  color: #ffffff;
+  border-color: #8b2537;
+  box-shadow: 0 2px 4px rgba(139, 37, 55, 0.2);
+}
+
+/* Q10 Offers screen images */
+.art-option.screen-option img,
+.screen-options .screen-option img.offers-screen-img {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  display: block !important;
+  object-fit: contain !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 auto !important;
+  pointer-events: none !important;
+}

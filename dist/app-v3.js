@@ -1,15 +1,24 @@
 'use strict';
+function detectClientOS() {
+  const ua = navigator.userAgent || '';
+  if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
+  if (/Android/.test(ua)) return 'android';
+  if (/Macintosh|Windows|Linux/.test(ua)) return 'desktop';
+  return 'other';
+}
+
 const $=selector=>document.querySelector(selector);
 const R=window.SurveyRulesV3;
 const random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
 const storageKey=R.version;
 const artworkRevision='sw-reasons-2026-09-24';
-let state={version:R.version,id:crypto.randomUUID(),styleOrder:R.shuffle(R.styles,random),productOrder:R.shuffle(R.products,random),assignments:Object.fromEntries(R.products.map(id=>[id,R.shuffle(R.styles,random)])),artworkRevision,details:{},answers:{respondent_name:'',home_reason:'',two_wheeler_reason:'',reason:'',changes:''},step:0};
+let state={version:R.version,id:crypto.randomUUID(),styleOrder:R.shuffle(R.styles,random),productOrder:R.shuffle(R.products,random),assignments:Object.fromEntries(R.products.map(id=>[id,R.shuffle(R.styles,random)])),artworkRevision,details:{},answers:{age_bracket:'',relationship:'',client_os:'',home_reason:'',two_wheeler_reason:'',reason:'',changes:''},step:0};
 try{const saved=JSON.parse(sessionStorage.getItem(storageKey));if(saved?.version===R.version){if(saved.pendingResponse){R.validate(saved.pendingResponse);state={...saved.pendingResponse,pendingResponse:saved.pendingResponse,step:12};}else if(saved.submitted===true)state.submitted=true;}}catch{}
+if (!state.answers.client_os) state.answers.client_os = detectClientOS();
 const styles=state.styleOrder;
 const names={with_plinth:'3D with plinth',without_plinth:'3D without plinth',flat_2d:'Existing 2D'};
 const products=state.productOrder.map(id=>window.PRODUCTS.find(p=>p.id===id));
-const steps=[{kind:'name'}].concat(products.map(product=>({kind:'preference',product})).concat(products.filter(p=>['home','two_wheeler'].includes(p.id)).map(product=>({kind:'clarity',product})),[{kind:'screen'},{kind:'cc_icons'},{kind:'consistency'},{kind:'recommendation'}]));
+const steps=[{kind:'intro'}].concat(products.map(product=>({kind:'preference',product})).concat(products.filter(p=>['home','two_wheeler'].includes(p.id)).map(product=>({kind:'clarity',product})),[{kind:'screen'},{kind:'cc_icons'},{kind:'consistency'},{kind:'recommendation'}]));
 const answers=state.answers,comments=answers;
 if(state.pendingResponse)state.step=steps.length-1;
 let step=state.step,busy=false;
@@ -20,7 +29,7 @@ function showError(message){$('#form-error').textContent=message;$('#form-error'
 function updateNextBtns(d,t){['#next','#next-top'].forEach(s=>{const el=$(s);if(el){if(d!==undefined)el.disabled=d;if(t!==undefined)el.textContent=t;}});}
 const screenObserver=new ResizeObserver(entries=>entries.forEach(({target,contentRect})=>{target.firstElementChild.style.transform=`scale(${contentRect.width/360})`;}));
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const key=()=>steps[step].kind==='name'?'respondent_name':steps[step].product?steps[step].product.id+'_'+steps[step].kind:steps[step].kind;
+const key=()=>steps[step].kind==='intro'?'intro':steps[step].product?steps[step].product.id+'_'+steps[step].kind:steps[step].kind;
 function artwork(product,style){return product.images[style]?`<img src="${product.images[style]}" alt="${escape(product.name)}, ${names[style]}" width="208" height="208">`:'<span class="missing-art"><span>Artwork pending</span><small>Matching no-plinth version needed</small></span>';}
 function artChoices(q){
  const family=!q.product;
@@ -50,10 +59,11 @@ function ccIconChoices() {
    <div class="cc-screen-container">
     <img src="assets/cc-2d-landing.png" alt="Existing 2D landing page screen">
    </div>
-   <div class="cc-icons-showcase">
-    <div class="cc-icon-card"><img src="assets/cc-2d-lounge-glyph.png" class="cc-icon-img" alt="Lounge"><span class="cc-icon-label">Lounge</span></div>
-    <div class="cc-icon-card"><img src="assets/cc-2d-quick-glyph.png" class="cc-icon-img" alt="Issuance"><span class="cc-icon-label">Issuance</span></div>
-    <div class="cc-icon-card"><img src="assets/cc-2d-rewards-glyph.png" class="cc-icon-img" alt="Rewards"><span class="cc-icon-label">Rewards</span></div>
+      <div class="cc-icons-showcase">
+    <div class="cc-icon-card"><img src="assets/cc-2d-lounge.png" class="cc-icon-img" alt="Lounge"><span class="cc-icon-label">Lounge</span></div>
+    <div class="cc-icon-card"><img src="assets/cc-2d-movie.png" class="cc-icon-img" alt="Movies"><span class="cc-icon-label">Movies</span></div>
+    <div class="cc-icon-card"><img src="assets/cc-2d-rewards.png" class="cc-icon-img" alt="Rewards"><span class="cc-icon-label">Rewards</span></div>
+    <div class="cc-icon-card"><img src="assets/cc-2d-tickets.png" class="cc-icon-img" alt="Perks"><span class="cc-icon-label">Perks</span></div>
    </div>
   </button>
  </div>`;
@@ -69,44 +79,78 @@ function questionDetails(){
 function render(focus=false){
  $('#form-error').hidden=true;if(state.submitted){showSuccess();return;}
  const q=steps[step];const final=step===steps.length-1;
- const title=q.kind==='name'?'Help shape our illustration direction':q.kind==='preference'?`Which illustration would you choose for ${q.product.name}?`:q.kind==='clarity'?'At this size, which illustration is easiest to make out?':q.kind==='screen'?'Which illustrations work best on this screen?':q.kind==='cc_icons'?'Credit card landing pages':q.kind==='consistency'?'Which set feels most consistent?':'Which direction would you recommend for Offers?';
- const instruction=q.kind==='name'?'':q.kind==='preference'?'Think about its use on the Offers page. Choose an option, then tap Next.':q.kind==='clarity'?`${q.product.name} · Compare the three illustrations at the same size.`:q.kind==='screen'?'Compare the product illustrations in the Offers screen. Choose a screen, then tap Next.':q.kind==='cc_icons'?'Compare the new flatter 3D icons to the existing 2D line-art icons.':q.kind==='consistency'?'Consider how the illustrations work together across all six products.':'Consider all six products. It’s okay to prefer different styles for different products.';
- const type=q.kind==='name'?'UX Squad Design Study':q.kind==='preference'?'Product preference':q.kind==='clarity'?'Clarity at a smaller size':q.kind==='screen'?'In the Offers screen':q.kind==='cc_icons'?'Iconography style':q.kind==='consistency'?'Across the family':'Your recommendation';
- const note=q.kind==='clarity'?'Shown in a 64 px slot, matching the product cards in the supplied screen.':q.kind==='screen'?'Illustrative mockups only. Please compare the illustrations; minor UI inaccuracies shown here will not appear in the final screen.':'';
- const comment=q.kind==='name'?'':questionDetails();
+ const title=q.kind==='intro'?'Help shape our illustration direction':q.kind==='preference'?`Which illustration would you choose for ${q.product.name}?`:q.kind==='clarity'?'At this size, which illustration is easiest to make out?':q.kind==='screen'?'Which illustrations work best on this screen?':q.kind==='cc_icons'?'Credit card landing pages':q.kind==='consistency'?'Which set feels most consistent?':'Which direction would you recommend for Offers?';
+ const instruction=q.kind==='intro'?'':q.kind==='preference'?'Think about its use on the Offers page. Choose an option, then tap Next.':q.kind==='clarity'?`${q.product.name} · Compare the three illustrations at the same size.`:q.kind==='screen'?'Compare the product illustrations in the Offers screen. Choose a screen, then tap Next.':q.kind==='cc_icons'?'Compare the new flatter 3D icons to the existing 2D line-art icons.':q.kind==='consistency'?'Consider how the illustrations work together across all six products.':'Consider all six products. It’s okay to prefer different styles for different products.';
+ const type=q.kind==='intro'?'UX Squad Design Study':q.kind==='preference'?'Product preference':q.kind==='clarity'?'Clarity at a smaller size':q.kind==='screen'?'In the Offers screen':q.kind==='cc_icons'?'Iconography style':q.kind==='consistency'?'Across the family':'Your recommendation';
+ const note=q.kind==='clarity'?'Shown in a 64 px slot, matching the product cards in the supplied screen.':'';
+ const comment=q.kind==='intro'?'':questionDetails();
  const nextTop=document.createElement('button');nextTop.id='next-top';nextTop.type='submit';nextTop.className='send';
- const nameContent=`<div class="survey-intro-card">
-   <div class="intro-card-header">
-     <strong>Why we’re doing this</strong>
-     <span class="intro-badge">⏱ ~3 mins</span>
-   </div>
-   <p class="intro-card-desc">We are evaluating three visual directions for product illustrations and landing page iconography:</p>
-   <ul class="intro-card-list">
-     <li><strong>3D with plinth</strong> vs <strong>3D without plinth</strong> vs <strong>Existing 2D</strong></li>
-     <li>Visual clarity and recognition across 6 key banking products</li>
-     <li>Real screen context on the Offers page &amp; new Credit Card icons</li>
-   </ul>
-   <p class="intro-card-footer">Your input will help the UX Squad finalize the art direction for upcoming releases.</p>
- </div>
- <div class="name-field">
-   <label for="respondent_name">Your name</label>
-   <p class="name-field-help">Please enter your name to begin. Your feedback will be saved with your review.</p>
-   <input id="respondent_name" name="respondent_name" type="text" autocomplete="name" maxlength="100" placeholder="e.g. Rahul Sharma" required value="${escape(answers.respondent_name)}">
- </div>`;
- $('#screen').innerHTML=`<p class="question-kind">${type}</p><div class="question-heading"><h1 tabindex="-1">${title}</h1></div>${instruction?`<p class="instruction">${instruction}</p>`:''}${q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='name'?nameContent:(q.kind==='screen'?screenChoices():q.kind==='cc_icons'?ccIconChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
+ 
+  const introContent=`<div class="trust-badge">
+      <span class="trust-icon">🔒</span>
+      <span>100% Anonymous · No personal data · ⏱ ~3 mins</span>
+    </div>
+    <div class="survey-intro-card">
+    <div class="intro-card-header">
+      <strong>Why we’re doing this</strong>
+    </div>
+    <p class="intro-card-desc">We are evaluating three visual directions for product illustrations and landing page iconography:</p>
+    <ul class="intro-card-list">
+      <li><strong>3D with plinth</strong> vs <strong>3D without plinth</strong> vs <strong>Existing 2D</strong></li>
+      <li>Visual clarity and recognition across 6 key banking products</li>
+      <li>Real screen context on the Offers page &amp; new Credit Card icons</li>
+    </ul>
+    <p class="intro-card-footer">Your input will help the UX Squad finalize the art direction for upcoming releases.</p>
+  </div>
+  <div class="demographics-form">
+    <fieldset class="pill-selector-group">
+      <legend>Your age group</legend>
+      <div class="pill-options">
+        <button type="button" class="pill-btn" data-field="age_bracket" data-val="under_25" aria-pressed="${answers.age_bracket==='under_25'}">&lt; 25</button>
+        <button type="button" class="pill-btn" data-field="age_bracket" data-val="25_34" aria-pressed="${answers.age_bracket==='25_34'}">25–34</button>
+        <button type="button" class="pill-btn" data-field="age_bracket" data-val="35_49" aria-pressed="${answers.age_bracket==='35_49'}">35–49</button>
+        <button type="button" class="pill-btn" data-field="age_bracket" data-val="50_plus" aria-pressed="${answers.age_bracket==='50_plus'}">50+</button>
+      </div>
+    </fieldset>
+    <fieldset class="pill-selector-group">
+      <legend>Your relationship</legend>
+      <div class="pill-options">
+        <button type="button" class="pill-btn" data-field="relationship" data-val="icici_bank_customer" aria-pressed="${answers.relationship==='icici_bank_customer'}">ICICI Bank Customer</button>
+        <button type="button" class="pill-btn" data-field="relationship" data-val="bank_team" aria-pressed="${answers.relationship==='bank_team'}">Bank Team</button>
+        <button type="button" class="pill-btn" data-field="relationship" data-val="agency_team" aria-pressed="${answers.relationship==='agency_team'}">Agency Team</button>
+        <button type="button" class="pill-btn" data-field="relationship" data-val="other_bank" aria-pressed="${answers.relationship==='other_bank'}">Other Bank User</button>
+      </div>
+    </fieldset>
+  </div>`;
+
+ $('#screen').innerHTML=`<p class="question-kind">${type}</p><div class="question-heading"><h1 tabindex="-1">${title}</h1></div>${instruction?`<p class="instruction">${instruction}</p>`:''}${note&&q.kind==='screen'?`<p class="preview-caveat">${note}</p>`:''}${q.kind==='intro'?introContent:(q.kind==='screen'?screenChoices():q.kind==='cc_icons'?ccIconChoices():artChoices(q))+options(q)}${note&&q.kind!=='screen'?`<p class="preview-caveat">${note}</p>`:''}${comment}`;
  document.querySelector('.question-heading').append(nextTop);
  document.querySelector('main').classList.toggle('screen-comparison',q.kind==='screen');
  screenObserver.disconnect();document.querySelectorAll('.screen-viewport').forEach(el=>screenObserver.observe(el));
  $('#step-label').textContent=`${step+1} / ${steps.length}`;
  $('#progress-fill').style.width=`${(step+1)/steps.length*100}%`;
  $('#back').hidden=step===0;
- updateNextBtns(!R.validAnswer(key(),answers[key()])||(final&&!connected),final?(state.pendingResponse?'Try sending again':'Send feedback'):(step===0?'Start survey →':'Next →'));
+ const introValid = R.validAnswer('age_bracket', answers.age_bracket) && R.validAnswer('relationship', answers.relationship);
+  const isValid = q.kind==='intro' ? introValid : R.validAnswer(key(),answers[key()]);
+  updateNextBtns(!isValid||(final&&!connected),final?(state.pendingResponse?'Try sending again':'Send feedback'):(step===0?'Start survey →':'Next →'));
  $('#back').disabled=!!state.pendingResponse;
  if(state.pendingResponse)document.querySelectorAll('[data-choice],textarea,input').forEach(el=>el.disabled=true);
  if(focus){$('#screen h1').focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});}
 }
 $('#survey').addEventListener('click',event=>{
- const button=event.target.closest('[data-choice]');if(!button||button.disabled||busy||state.pendingResponse||!R.validAnswer(key(),button.dataset.choice))return;
+ const button=event.target.closest('[data-choice], .pill-btn');if(!button)return;
+  if (button.matches('.pill-btn') && !busy && !state.pendingResponse) {
+    answers[button.dataset.field] = button.dataset.val;
+    const group = button.closest('.pill-options');
+    group.querySelectorAll('.pill-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === answers[button.dataset.field])));
+    const introValid = R.validAnswer('age_bracket', answers.age_bracket) && R.validAnswer('relationship', answers.relationship);
+    updateNextBtns(!introValid);
+    $('#form-error').hidden=true;
+    persist();
+    return;
+  }
+  if(!button.dataset.choice||button.disabled||busy||state.pendingResponse||!R.validAnswer(key(),button.dataset.choice))return;
+
  if([...document.querySelectorAll('.art-options img')].some(img=>!img.complete||!img.naturalWidth)){showError('The illustrations are still loading. Please try again in a moment.');return;}
  answers[key()]=button.dataset.choice;
  document.querySelectorAll('[data-choice]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.choice===answers[key()])));
@@ -149,7 +193,9 @@ function showSuccess(){
  $('.progress').hidden=true;$('#step-label').hidden=true;$('#survey h1').focus();window.scrollTo({top:0,behavior:'instant'});
 }
 $('#survey').addEventListener('submit',async event=>{
- event.preventDefault();if(busy||!R.validAnswer(key(),answers[key()]))return;
+ event.preventDefault();const introValid = R.validAnswer('age_bracket', answers.age_bracket) && R.validAnswer('relationship', answers.relationship);
+  const isValid = steps[step].kind==='intro' ? introValid : R.validAnswer(key(),answers[key()]);
+  if(busy||!isValid)return;
  if(step<steps.length-1){if(state.pendingResponse)return;step++;persist();render(true);return;}
  if(!connected){showError('The response connection is unavailable. Please try again later.');return;}
  let data;try{data=state.pendingResponse||payload();state.pendingResponse=data;persist();}catch{showError('Please choose an option for each question.');return;}

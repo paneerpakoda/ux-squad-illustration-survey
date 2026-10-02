@@ -1,10 +1,15 @@
 var SurveyRulesV3 = (function(){
  'use strict';
- const version='ux-illustrations-2026-09-v3.1';
+ const version='ux-illustrations-2026-10-v3.2';
  const styles=['with_plinth','without_plinth','flat_2d'];
  const products=['home','personal','car','education','rupay','two_wheeler'];
  const choices=[...styles,'no_preference','none'];
- const fields={respondent_name:100,...Object.fromEntries(products.map(p=>[p+'_preference',choices]))};
+ const fields={
+  age_bracket: ['under_25', '25_34', '35_49', '50_plus'],
+  relationship: ['icici_bank_customer', 'bank_team', 'agency_team', 'other_bank'],
+  client_os: ['ios', 'android', 'desktop', 'other'],
+  ...Object.fromEntries(products.map(p=>[p+'_preference',choices]))
+ };
  const ccIconChoices=['3d_icons','2d_icons','no_preference'];
  Object.assign(fields,{home_clarity:[...styles,'equal','none'],two_wheeler_clarity:[...styles,'equal','none'],screen:choices,cc_icons:ccIconChoices,consistency:[...styles,'equal','none'],recommendation:[...choices,'depends'],home_reason:1500,two_wheeler_reason:1500,reason:1500,changes:1500});
  const detailQuestions=[...products.map(p=>p+'_preference'),'home_clarity','two_wheeler_clarity','screen','cc_icons','consistency','recommendation'];
@@ -17,7 +22,7 @@ var SurveyRulesV3 = (function(){
   }
   return details;
  }
- function validAnswer(k,v){const r=fields[k];if(k==='respondent_name')return typeof v==='string'&&v.trim().length>0&&v.length<=100;return Object.prototype.hasOwnProperty.call(fields,k)&&typeof v==='string'&&(typeof r==='number'?v.length<=r:r.includes(v));}
+ function validAnswer(k,v){const r=fields[k];return Object.prototype.hasOwnProperty.call(fields,k)&&typeof v==='string'&&(typeof r==='number'?v.length<=r:r.includes(v));}
  function permutation(a,b){return Array.isArray(a)&&a.length===b.length&&new Set(a).size===b.length&&a.every(v=>b.includes(v));}
  function validate(p){
   if(!p||typeof p!=='object'||Array.isArray(p)||p.version!==version)throw Error('Unsupported survey version.');

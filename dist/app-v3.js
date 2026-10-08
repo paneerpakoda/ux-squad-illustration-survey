@@ -16,7 +16,7 @@ let state={version:R.version,id:crypto.randomUUID(),styleOrder:R.shuffle(R.style
 try{const saved=JSON.parse(sessionStorage.getItem(storageKey));if(saved?.version===R.version){if(saved.pendingResponse){R.validate(saved.pendingResponse);state={...saved.pendingResponse,pendingResponse:saved.pendingResponse,step:12};}else if(saved.submitted===true)state.submitted=true;}}catch{}
 if (!state.answers.client_os) state.answers.client_os = detectClientOS();
 const styles=state.styleOrder;
-const names={with_plinth:'3D with plinth',without_plinth:'3D without plinth',flat_2d:'Existing 2D'};
+const names={with_plinth:'3D with platform',without_plinth:'3D without platform',flat_2d:'Existing 2D'};
 const products=state.productOrder.map(id=>window.PRODUCTS.find(p=>p.id===id));
 const steps=[{kind:'intro'}].concat(products.map(product=>({kind:'preference',product})).concat(products.filter(p=>['home','two_wheeler'].includes(p.id)).map(product=>({kind:'clarity',product})),[{kind:'screen'},{kind:'cc_icons'},{kind:'consistency'},{kind:'recommendation'}]));
 const answers=state.answers,comments=answers;
@@ -30,7 +30,7 @@ function updateNextBtns(d,t){['#next','#next-top'].forEach(s=>{const el=$(s);if(
 const screenObserver=new ResizeObserver(entries=>entries.forEach(({target,contentRect})=>{target.firstElementChild.style.transform=`scale(${contentRect.width/360})`;}));
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const key=()=>steps[step].kind==='intro'?'intro':steps[step].product?steps[step].product.id+'_'+steps[step].kind:steps[step].kind;
-function artwork(product,style){return product.images[style]?`<img src="${product.images[style]}" alt="${escape(product.name)}, ${names[style]}" width="208" height="208">`:'<span class="missing-art"><span>Artwork pending</span><small>Matching no-plinth version needed</small></span>';}
+function artwork(product,style){return product.images[style]?`<img src="${product.images[style]}" alt="${escape(product.name)}, ${names[style]}" width="208" height="208">`:'<span class="missing-art"><span>Artwork pending</span><small>Matching no-platform version needed</small></span>';}
 function artChoices(q){
  const family=!q.product;
  return `<div class="art-options ${family?'family-options':q.kind==='clarity'?'context-options':''}" role="group" aria-label="Illustration choices">${(q.product?state.assignments[q.product.id]:styles).map((style,i)=>{
@@ -96,7 +96,7 @@ function render(focus=false){
     </div>
     <p class="intro-card-desc">We are evaluating three visual directions for product illustrations and landing page iconography:</p>
     <ul class="intro-card-list">
-      <li><strong>3D with plinth</strong> vs <strong>3D without plinth</strong> vs <strong>Existing 2D</strong></li>
+      <li><strong>3D with platform</strong> vs <strong>3D without platform</strong> vs <strong>Existing 2D</strong></li>
       <li>Visual clarity and recognition across 6 key banking products</li>
       <li>Real screen context on the Offers page &amp; new Credit Card icons</li>
     </ul>

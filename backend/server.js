@@ -21,7 +21,7 @@ function configuration(p){
       if(SurveyRulesV3.detailQuestions.includes(k)) header.push(k+'_details');
     }
     header.push('response_json','artwork_revision');
-    return {rules:SurveyRulesV3,name:'Responses v6',header,fields:Object.keys(SurveyRulesV3.fields)};
+    return {rules:SurveyRulesV3,name:'Responses v7',header,fields:Object.keys(SurveyRulesV3.fields)};
   }
   throw Error('Unsupported survey version.');
 }

@@ -202,7 +202,7 @@ $('#survey').addEventListener('submit',async event=>{
  busy=true;updateNextBtns(true,'Sending…');$('#back').disabled=true;$('#form-error').hidden=true;
  document.querySelectorAll('[data-choice],textarea,input').forEach(el=>el.disabled=true);
  try{await sendResponse(data);state.submitted=true;state.answers={};state.details={};delete state.pendingResponse;persist();showSuccess();}
- catch{showError('Could not confirm your response. Your answers are kept here. Please retry; it won’t send a duplicate.');updateNextBtns(false,'Try sending again');}
+ catch(error){showError((error&&error.message?error.message+' ':'')+'Could not confirm your response. Your answers are kept here. Please retry; it won’t send a duplicate.');updateNextBtns(false,'Try sending again');}
  finally{busy=false;}
 });
 function sendResponse(data){return new Promise((resolve,reject)=>{
@@ -212,7 +212,7 @@ function sendResponse(data){return new Promise((resolve,reject)=>{
  const cleanup=()=>{clearTimeout(timer);window.removeEventListener('message',receive);form.remove();iframe.remove();};
  const receive=event=>{let host;try{host=new URL(event.origin).hostname;}catch{return;}const trusted=event.origin.startsWith('https://')&&(host==='script.google.com'||host==='script.googleusercontent.com'||host.endsWith('-script.googleusercontent.com'));const m=event.data;
   if(!trusted||!m||m.type!=='ux-survey-saved'||m.nonce!==nonce||m.id!==data.id)return;
-  cleanup();m.ok===true?resolve():reject(Error('Save rejected.'));
+  cleanup();m.ok===true?resolve():reject(Error(m.error||'Save rejected.'));
  };
  const timer=setTimeout(()=>{cleanup();reject(Error('Confirmation timed out.'));},45000);
  window.addEventListener('message',receive);document.body.append(iframe,form);form.submit();

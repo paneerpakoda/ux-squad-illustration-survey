@@ -28,7 +28,7 @@ test('storage failure returns failure acknowledgment',()=>{const f=fixture();f.c
 test('a script tag in a comment cannot become executable confirmation HTML',()=>{const f=fixture();f.p.answers.reason='</script><script>alert(1)</script>';const html=post(f);assert.equal(html.includes('alert(1)'),false);assert.match(html,/"ok":true/);});
 
 test('invalid product mappings rejected before writing',()=>{const f=fixture();f.p.assignments.car=['flat_2d','flat_2d','with_plinth'];assert.throws(()=>f.ctx.saveResponse(f.p));assert.equal(f.getWrites(),0)});
-test('v3 never uses the original Responses tab',()=>{const f=fixture();let name;const book=f.ctx.SpreadsheetApp.openById();f.ctx.SpreadsheetApp.openById=()=>({getSheetByName:n=>{name=n;return book.getSheetByName(n);}});f.ctx.saveResponse(f.p);assert.equal(name,'Responses v6');assert.equal(f.rows[0].includes('product_assignments'),true)});
+test('v3 never uses the original Responses tab',()=>{const f=fixture();let name;const book=f.ctx.SpreadsheetApp.openById();f.ctx.SpreadsheetApp.openById=()=>({getSheetByName:n=>{name=n;return book.getSheetByName(n);}});f.ctx.saveResponse(f.p);assert.equal(name,'Responses v7');assert.equal(f.rows[0].includes('product_assignments'),true)});
 
 test('invalid demographic choice is rejected',()=>{const f=fixture();f.p.answers.age_bracket='invalid';assert.throws(()=>f.ctx.saveResponse(f.p));assert.equal(f.getWrites(),0)});
 

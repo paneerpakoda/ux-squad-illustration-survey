@@ -1,6 +1,6 @@
 const R=window.SurveyRules;
 const $=selector=>document.querySelector(selector);
-const styleNames={with_plinth:'3D with platform',without_plinth:'3D without platform',flat_2d:'2D'};
+const styleNames={with_plinth:'3D with plinth',without_plinth:'3D without plinth',flat_2d:'2D'};
 const productNames={home:'Home Loan',personal:'Personal Loan'};
 const assets={home:{with_plinth:'home-loan.png',without_plinth:'home-loan-no-plinth-study-transparent-r7.png',flat_2d:'home-loan-2d.webp'},personal:{with_plinth:'personal-loan-original.png',without_plinth:'personal-loan-no-plinth-draft-transparent-r7.png',flat_2d:'personal-loan-2d.webp'}};
 const labels={no_preference:'No preference',none:'None of these',depends:'Depends on the product'};
